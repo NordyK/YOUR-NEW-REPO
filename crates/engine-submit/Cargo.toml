@@ -1,0 +1,63 @@
+[package]
+name = "engine-submit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+engine-feed = { path = "../engine-feed" }
+engine-gas = { path = "../engine-gas" }
+engine-routes = { path = "../engine-routes" }
+engine-state = { path = "../engine-state" }
+engine-sim = { path = "../engine-sim" }
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+secp256k1 = { workspace = true }
+sha3 = { workspace = true }
+tiny-keccak = { workspace = true }
+crossbeam-utils = { workspace = true }
+arrayvec = { workspace = true }
+thiserror = { workspace = true }
+faster-hex = { workspace = true }
+rustls = { workspace = true }
+rustls-pki-types = { workspace = true }
+webpki-roots = { workspace = true }
+url = { workspace = true }
+memchr = { workspace = true }
+engine-sysopt = { path = "../engine-sysopt" }
+
+# B1: io_uring for zero-syscall socket writes on the submit hot path. Optional + opt-in via
+# the `io-uring-submit` feature so non-Linux builds (and CI on macOS) still compile.
+[target.'cfg(target_os = "linux")'.dependencies]
+io-uring = { version = "0.7", optional = true }
+libc = { workspace = true }
+
+[features]
+# P7A (GPT56SOL_NETWORK_REVIEW 2026-07-13): DEFAULT-OFF. The io_uring send path only ever engaged
+# for `Conn::Plain` (a local forwarder / test mock) — production HTTPS submission goes through
+# rustls' `StreamOwned::write_all` and NEVER touched io_uring. Worse, the old default-on path set up
+# a fresh ring per POST (no SQPOLL, `submit_and_wait(1)`) and, on a partial uring write, fell through
+# to a full `write_all` — corrupting the HTTP stream as `POST<partial>POST<full>`. Until a persistent
+# ring + SQPOLL under-rustls integration is built and proven (review "later" #5), the plain path uses
+# `write_all` and the feature stays opt-in via `--features io-uring-submit`.
+default = []
+io-uring-submit = ["dep:io-uring"]
+
+[dev-dependencies]
+criterion = { workspace = true }
+# Integration test (tests/mock_sequencer.rs) recovers the signer from the signed tx to prove the
+# wire carried a correctly-signed envelope. engine-feed is already a normal dep; declaring it here
+# makes `recover_tx_sender` reachable from the separate integration-test crate.
+engine-feed = { path = "../engine-feed" }
+alloy-primitives = { workspace = true }
+
+[[bench]]
+name = "submit"
+harness = false
+
+[lints]
+workspace = true

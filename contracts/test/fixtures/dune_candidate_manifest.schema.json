@@ -1,0 +1,69 @@
+{
+  "type": "object",
+  "required": ["generated_at_utc", "dune_query_ids", "candidates"],
+  "properties": {
+    "generated_at_utc": {
+      "type": "string"
+    },
+    "dune_query_ids": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "block_number",
+          "tx_hash",
+          "family_tags",
+          "project_path",
+          "dune_amount_usd",
+          "first_token",
+          "last_token",
+          "raw_reconstruction_status"
+        ],
+        "properties": {
+          "block_number": {
+            "type": "integer"
+          },
+          "tx_hash": {
+            "type": "string"
+          },
+          "family_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "project_path": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dune_amount_usd": {
+            "type": "string"
+          },
+          "first_token": {
+            "type": "string"
+          },
+          "last_token": {
+            "type": "string"
+          },
+          "raw_reconstruction_status": {
+            "type": "string",
+            "enum": [
+              "unverified",
+              "reconstructed",
+              "rejected_non_contiguous",
+              "rejected_missing_raw"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

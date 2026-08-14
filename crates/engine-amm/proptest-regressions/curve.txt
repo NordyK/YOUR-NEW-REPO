@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 11e8cdaf3667fd50e1e91fb827fdc748f519695872e9930caf4b4c5717f2a42d # shrinks to state = StableSwapState { n_coins: 2, balances: [1000000000000000000, 1000000003464101618, 0, 0, 0, 0, 0, 0], rates: [1000000000000000000, 1000000000000000000, 0, 0, 0, 0, 0, 0], a_param: 100, fee: 0, offpeg_fee_multiplier: 0 }

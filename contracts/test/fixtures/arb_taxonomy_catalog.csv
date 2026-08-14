@@ -1,0 +1,29 @@
+# WI-7 — unified arb-taxonomy money-proof catalog (Arbitrum One).
+# Replay-ready superset of anvil/dune_arb_taxonomy.csv: every same_dex row's tx_hash is RESOLVED
+# (the source CSV left them as 0x placeholders) via Dune query 7730487 and verified on-chain at its
+# block. Each {arb_type x subtype x family} cell maps to an existing proof bucket:
+#   proof_kind=family_pnl   -> family realized-positive in test/MantisFamilyRealizedPnL.Fork.t.sol
+#   proof_kind=candidate    -> net-positive REVM-success rows for that exchange_id in
+#                              fixtures/candidate_records_economics_sample.jsonl
+#   proof_kind=composite    -> executable <=4-hop cross-dex cycle; every constituent family resolves
+#   proof_kind=historical_taxonomy -> deep >=5-hop cycle; taxonomy coverage only, not executable capital proof
+# Source: Dune 7589374 (taxonomy) + 7730452/7730487 (same-dex tx-hash backfill). max_usd = Dune amount_usd.
+# columns: block,tx_hash,arb_type,subtype,hops,families,cycle_token,max_usd,proof_kind,proof_ref
+466395019,0x442f983958d795f7c8d58d04119b58f15255629e3395c969f33da72c80d6ee97,cross_dex,stable,9,balancer+camelot+dodo+fluid+maverick+trader_joe+uniswap,USDC,327247,historical_taxonomy,balancer+camelot+dodo+fluid+maverick+trader_joe+uniswap
+465978703,0x320506e97b495e99948e69bbc343a4719116b0b1c640404329ee15da9ac75610,cross_dex,stable,6,balancer+camelot+dodo+fluid+native+uniswap,USDC,153768,historical_taxonomy,balancer+camelot+dodo+fluid+native+uniswap
+467233190,0x5442442c3a1a1360fb2039a1a99e7f4ec088bb016b6f0a715169f3796a3811ca,cross_dex,volatile,4,camelot+dodo+uniswap,WETH,309,composite,camelot+dodo+uniswap
+467224212,0x9501874385abed25fe8bfd285a05dd0440df96b13c24953a15cfd6e660b5298c,cross_dex,volatile,4,camelot+dodo+pancakeswap+uniswap,USDC,250,composite,camelot+dodo+pancakeswap+uniswap
+467067783,0xcf20dabdd7ed49ea6bb7e7a540d42a9d9d2f6e6222cd8c848c3370fd7a75bd70,cross_dex,stable,3,balancer+camelot+uniswap,USDC,37006,composite,balancer+camelot+uniswap
+467221008,0x27cea43fb5e2051e72d25bed78b07aa7c4cf3a0a12aa6642c17f507424c5b59f,cross_dex,volatile,3,dodo+pancakeswap+uniswap,WBTC,11955,composite,dodo+pancakeswap+uniswap
+464888226,0xe36cafba9b6ba148bb67b3aa0dafe81dd52229b7423baf9cb5c16bc8110b2962,cross_dex,stable,2,camelot+native,USDC,33943,composite,camelot+native
+467227639,0xb2fdcd32c0d8a5778b269b225f5b7d22f57977b6e3a351efa537ba141b1625bd,cross_dex,volatile,2,dodo+pancakeswap,USDC,1344,composite,dodo+pancakeswap
+467225948,0xe11c01b0062c44b5dd6df148bfb38d217d2693f06a6ca0061a9a09155b48bae3,cross_dex,volatile,2,dodo+fluid,WETH,78,composite,dodo+fluid
+467226112,0x356d1ff3142f87dcdeb38263d1f9c5f98a6e2cece1a5e0e104a0243c61f5fe53,same_dex,fee_arb,2,uniswap,USDC,31538,candidate,0
+464672620,0x84f548572fd7b8565592c21e4405729759974c66ed59a551d001f7fd8ba5b1c4,same_dex,fee_arb,2,fluid,USDt0,10846,family_pnl,fluid
+467230658,0x8952fada1aa9d50f1e058693cffd6620fd614cfb4cea620d2af8a3a2b9e11653,same_dex,fee_arb,2,pancakeswap,WETH,149,candidate,6
+465195616,0x0979d6616321d507922528861a585472149623cd8635426012743048d45e3002,same_dex,fee_arb,2,dodo,USDC,100,family_pnl,dodo
+467187189,0x229ccbe1fff456d34569f9cb200b024a840018a2403592efd1904099aae710f1,same_dex,fee_arb,2,balancer,WETH,9,family_pnl,balancer
+467232725,0xfed799ec96af6006c8221468e33273c83019278da529350aa459070059cdef35,same_dex,multihop,3,pancakeswap,WETH,80,candidate,6
+465501311,0x445b165d9ddb838bc69920052ca15bb7688dc890d6c9be3ea65c3237d814886e,same_dex,multihop,3,ramses,WETH,66,family_pnl,ramses
+467160297,0x370591eb4ec1c1155687f1b7a2b5fcedce5633bb0c1bfe0555f288391a6310c1,same_dex,stable,3,trader_joe,USDC,13,family_pnl,trader_joe
+464244751,0x9176ec8bc1d04f86e6177b9f4b2d3f0f6b8d096f8033a8213252fd5b4da02f7f,same_dex,fee_arb,2,chronos,LUSD,11,family_pnl,chronos

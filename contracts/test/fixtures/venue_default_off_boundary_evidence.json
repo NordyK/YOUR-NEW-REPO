@@ -1,0 +1,21 @@
+{
+  "analysis": "default_off_venue_safety_boundary",
+  "question": "Can the Kyber over-quote (and the not-fully-certified BalancerWeighted / CurveCryptoSwap venues) reach capital?",
+  "venues": {
+    "kyber": "KyberSwapElastic (exchange id 7) — has detector/kernel over-quotes",
+    "balancer_weighted": "BalancerWeighted (exchange id 27)",
+    "curve_cryptoswap": "CurveCryptoSwap (exchange id 17)"
+  },
+  "key_finding": "These venues are NOT excluded at route enumeration — is_phase1_supported() admits all three. 'default-off' is therefore NOT 'absent/unrouted'; it is 'REVM-authoritative and not promoted to the zero-RPC fast lane'. The over-quote is contained by the validation backstop, not by venue exclusion.",
+  "containment_chain": {
+    "1_enumerated": "engine-routes/src/enumerator.rs is_phase1_supported() includes KyberSwapElastic, BalancerWeighted, CurveCryptoSwap (they CAN produce candidates)",
+    "2_revm_authoritative": "REVM_VALIDATE defaults ON (env_flag_default_on -> env_flag_with_default(name, true)); require_revm gates submit. Every candidate is re-executed in REVM against real state before submit, so a detector/kernel over-quote is caught (REVM sees true output) and the net-gate rejects net-negative.",
+    "3_not_on_fast_lane": "FASTLANE_AUTHORITATIVE defaults OFF, and the default promoted set BYTE_EXACT_FAMILIES = {UniswapV2,SushiV2,CamelotV2,UniswapV3,SushiV3,PancakeV3,AlgebraV19,UniswapV4} EXCLUDES Kyber/CryptoSwap/BalancerWeighted. So they cannot bypass REVM via the zero-RPC lane.",
+    "4_promotion_gate": "fastlane_policy::family_promotion_ready(agree,disagree,min) = (disagree==0 && agree>=min). A family that disagrees with REVM (i.e. over-quotes) is structurally INELIGIBLE for fast-lane promotion."
+  },
+  "kyber_overquote_status": "contained: caught by REVM re-sim + net-gate before submit; cannot be fast-lane-promoted while it disagrees with REVM",
+  "enable_criterion": "per-family shadow agreement with REVM (disagree==0, agree>=min_samples) before fast-lane promotion; until then REVM stays authoritative for the venue",
+  "residual_risk": "materializes ONLY under explicit operator override: REVM_VALIDATE=0 (disables the backstop) OR force-promoting a disagreeing family to the authoritative lane (which the promotion gate is designed to refuse)",
+  "decision": "no_production_change_required_boundary_structurally_enforced",
+  "rationale": "The over-quote cannot reach capital on default config: REVM is authoritative and the fast lane excludes these venues, with a promotion gate that blocks promoting an over-quoting family. Pin the boundary so it cannot silently erode (e.g. a venue being added to BYTE_EXACT_FAMILIES or the promotion gate being weakened)."
+}

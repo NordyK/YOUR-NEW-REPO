@@ -1,0 +1,118 @@
+[package]
+name = "engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+name = "engine"
+path = "src/lib.rs"
+
+[features]
+# Stage 3 revmc AOT/JIT — OFF by default (the default workspace build compiles zero revmc code and
+# needs no LLVM). Forwards to engine-revm's `revmc` feature; build with LLVM 22 present:
+#   LLVM_SYS_221_PREFIX=/usr/lib/llvm-22 cargo build -p engine --features revmc
+revmc = ["engine-revm/revmc"]
+# Opt-in candidate timing/ledger instrumentation used by tools/flag_harness. Keeping this feature
+# off preserves the production Candidate layout and adds no detection-path clock/branch work.
+flag-harness = []
+
+[[bin]]
+name = "engine"
+path = "src/main.rs"
+
+[[bin]]
+name = "feed-arrival-probe"
+path = "src/bin/feed_arrival_probe.rs"
+
+[dev-dependencies]
+revm = { version = "41.0.0", default-features = false, features = ["std"] }
+secp256k1 = { workspace = true }
+engine-amm = { path = "../engine-amm" }
+engine-config = { path = "../engine-config" }
+engine-detect = { path = "../engine-detect" }
+engine-discovery = { path = "../engine-discovery" }
+engine-feed = { path = "../engine-feed" }
+engine-gas = { path = "../engine-gas" }
+engine-revm = { path = "../engine-revm" }
+engine-replay = { path = "../engine-replay" }
+engine-routes = { path = "../engine-routes" }
+engine-sim = { path = "../engine-sim" }
+# WI-06 F1: dev-only `test-permit` gives engine's tests `StateWriterPermit::test_mint()` (WILDCARD
+# brand) so a test can witness a universe it did not itself seal. Dev-dependency edge only ⇒ OFF in
+# every production `[dependencies]` build (resolver v2).
+engine-state = { path = "../engine-state", features = ["test-permit"] }
+engine-submit = { path = "../engine-submit" }
+engine-metrics = { path = "../engine-metrics" }
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+criterion = { workspace = true }
+base64-simd = { workspace = true }
+faster-hex = { workspace = true }
+tungstenite = { workspace = true }
+
+[[bench]]
+name = "pipeline"
+harness = false
+
+[[bench]]
+name = "sim_sweep"
+harness = false
+
+[[bench]]
+name = "strategy_sweep"
+harness = false
+
+[[bench]]
+name = "rank_cache"
+harness = false
+
+[dependencies]
+engine-amm = { path = "../engine-amm" }
+engine-feed = { path = "../engine-feed" }
+engine-state = { path = "../engine-state" }
+engine-routes = { path = "../engine-routes" }
+engine-detect = { path = "../engine-detect" }
+engine-sim = { path = "../engine-sim" }
+engine-revm = { path = "../engine-revm" }
+engine-gas = { path = "../engine-gas" }
+engine-submit = { path = "../engine-submit" }
+engine-config = { path = "../engine-config" }
+engine-metrics = { path = "../engine-metrics" }
+engine-replay = { path = "../engine-replay" }
+engine-rpc = { path = "../engine-rpc" }
+engine-discovery = { path = "../engine-discovery" }
+engine-sysopt = { path = "../engine-sysopt" }
+
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+mimalloc = { workspace = true }
+libc = { workspace = true }
+nix = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+crossbeam-utils = { workspace = true }
+crossbeam-queue = { workspace = true }
+rtrb = { workspace = true }
+arc-swap = { workspace = true }
+arrayvec = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+base64-simd = { workspace = true }
+faster-hex = { workspace = true }
+ahash = { workspace = true }
+thiserror = { workspace = true }
+tiny-keccak = { workspace = true }
+sha2 = { workspace = true }
+socket2 = { workspace = true }
+tungstenite = { workspace = true }
+rustls = { workspace = true }
+url = { workspace = true }
+# Stage-5 mirror-journal disk persistence (MIRROR_JOURNAL_PERSIST, default off).
+redb = { workspace = true }
+
+[lints]
+workspace = true

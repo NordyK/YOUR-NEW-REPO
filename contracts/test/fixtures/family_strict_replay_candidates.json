@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "purpose": "Strict AMM-family replay seed fixture for currently blocked registered families. This is not profit certification; it identifies current local seeds and the exact evidence still missing before each family can be promoted to strict realized-net replay coverage.",
+  "families_required": [
+    "BalancerStable",
+    "BalancerWeighted",
+    "CamelotV2",
+    "TraderJoeLb",
+    "UniswapV2",
+    "UniswapV4",
+    "CurveStableSwapNg"
+  ],
+  "candidates": [
+    {
+      "family": "BalancerStable",
+      "registered_family": "balancer_v2",
+      "block_number": 463013008,
+      "tx_hash": "0x065fe8afd83c9807958dfc41e932e7d9eaea2df3f08be5dd8a55d2544fc2cbc8",
+      "hop_count": 2,
+      "token_path": ["USDC", "wstETH"],
+      "pool_path": [],
+      "exchange_ids": [26],
+      "source": "anvil/anvil_catalog.csv",
+      "source_family_alias": "balancer+camelot",
+      "expected_replay_class": "seed_only_missing_pool_path_or_family_metadata",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Anvil catalog proves a local Balancer-family historical seed exists, but strict replay is missing Balancer pool id, stable-vs-weighted pool type, Vault token indexes, pool path, calldata, and realized net after gas."
+    },
+    {
+      "family": "BalancerWeighted",
+      "registered_family": "balancer_v2",
+      "block_number": 463083240,
+      "tx_hash": "0x887684c963d69084fe5abf71f5ffde7322cedd22a5c7cbe8a71a2b55fe307482",
+      "hop_count": 2,
+      "token_path": ["USDC", "USDt0"],
+      "pool_path": [],
+      "exchange_ids": [27],
+      "source": "anvil/anvil_catalog.csv",
+      "source_family_alias": "balancer+pancakeswap",
+      "expected_replay_class": "seed_only_missing_pool_path_or_family_metadata",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Anvil catalog proves a local Balancer-family historical seed exists, but strict replay is missing Balancer pool id, stable-vs-weighted pool type, Vault token indexes, pool path, calldata, and realized net after gas."
+    },
+    {
+      "family": "CamelotV2",
+      "registered_family": "camelot_v2",
+      "block_number": 462909245,
+      "tx_hash": "0xd7b25bba082cb2d9afce3a3ec7b882482f976bedb73df2883e9ed4e108a52557",
+      "hop_count": 2,
+      "token_path": ["USDC", "WBTC"],
+      "pool_path": [],
+      "exchange_ids": [1],
+      "source": "anvil/anvil_catalog.csv",
+      "source_family_alias": "camelot+uniswap",
+      "expected_replay_class": "seed_only_missing_pool_path_or_family_metadata",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Anvil catalog proves a local Camelot-family historical seed exists, but strict replay is missing the exact pool path, Camelot V2 pair metadata, calldata, and realized net after gas."
+    },
+    {
+      "family": "TraderJoeLb",
+      "registered_family": "trader_joe_lb",
+      "block_number": 462908271,
+      "tx_hash": "0x0dc3abb2500465f0058f3f3c81804678fc9a5763ecb4f3cc78bb54cabac94ffa",
+      "hop_count": 3,
+      "token_path": ["PENDLE", "WETH"],
+      "pool_path": [],
+      "exchange_ids": [15],
+      "source": "anvil/anvil_catalog.csv",
+      "source_family_alias": "trader_joe+uniswap",
+      "expected_replay_class": "seed_only_missing_pool_path_or_family_metadata",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Anvil catalog proves a local Trader Joe-family historical seed exists, but strict replay is missing LB bin step, active id, pool path, calldata, and realized net after gas."
+    },
+    {
+      "family": "UniswapV2",
+      "registered_family": "uniswap_v2",
+      "block_number": 462907520,
+      "tx_hash": "0x49fe181b6dd857ca871976ea2f3619acc41dae20858764bdf6cdb91c5962f6b0",
+      "hop_count": 3,
+      "token_path": ["PENDLE", "USDC", "WETH"],
+      "pool_path": [],
+      "exchange_ids": [24],
+      "source": "anvil/anvil_catalog.csv",
+      "source_family_alias": "pancakeswap+uniswap",
+      "expected_replay_class": "seed_only_missing_pool_path_or_family_metadata",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Anvil catalog proves a local Uniswap-family historical seed exists, but strict replay is missing exact Uniswap V2 classification, exact pool path, calldata, and realized net after gas."
+    },
+    {
+      "family": "UniswapV4",
+      "registered_family": "uniswap_v4",
+      "block_number": 465686729,
+      "tx_hash": null,
+      "route_id": 268,
+      "hop_count": 2,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x80c735c5a0222241f211b3edb8df2ccefad94553",
+        "0x0d32a3bb04e8ff29f0974c9d3f3d85012a0b5d14"
+      ],
+      "exchange_ids": [20, 23],
+      "source": "codex_tmp/gate9_revm_preflight/gate9/B_binary_candidates_revm.jsonl",
+      "source_family_alias": "UniswapV4>DodoV2",
+      "expected_replay_class": "gate9_replay_positive_but_missing_strict_metadata_or_gas_net",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Gate9 REVM has a positive replay-sequence balance delta for this Uniswap V4 route, but strict replay is missing tx_hash, V4 pool key metadata, calldata, changed slots, gas fee terms, and net profit after gas."
+    },
+    {
+      "family": "CurveStableSwapNg",
+      "registered_family": "curve_stableswap_ng",
+      "block_number": 465686729,
+      "tx_hash": null,
+      "route_id": 6252,
+      "hop_count": 3,
+      "token_path": [
+        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+      ],
+      "pool_path": [
+        "0x5969efdde3cf5c0d9a88ae51e47d721096a97203",
+        "0x80c735c5a0222241f211b3edb8df2ccefad94553",
+        "0x49b720f1aab26260beaec93a7beb5bf2925b2a8f"
+      ],
+      "exchange_ids": [0, 20, 18],
+      "source": "codex_tmp/gate9_revm_preflight/gate9/B_binary_candidates_revm.jsonl",
+      "source_family_alias": "UniswapV3>UniswapV4>CurveStableSwapNg",
+      "expected_replay_class": "gate9_replay_positive_but_missing_strict_metadata_or_gas_net",
+      "strict_replay_status": "not_strict_replayable",
+      "blocker": "Gate9 REVM has a positive replay-sequence balance delta for this Curve StableSwap NG route, but strict replay is missing tx_hash, Curve coin indexes, V4 pool key metadata, calldata, changed slots, gas fee terms, and net profit after gas."
+    }
+  ]
+}

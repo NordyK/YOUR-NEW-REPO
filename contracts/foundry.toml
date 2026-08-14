@@ -1,0 +1,36 @@
+[profile.default]
+src = "src"
+test = "test"
+out = "out"
+libs = ["lib"]
+solc = "0.8.26"
+# Cancun: enables EIP-1153 transient storage (tstore/tload), used by the SEC-FLASH-ORIGIN guard.
+# Arbitrum One supports transient storage since ArbOS 20 (Atlas). 0.8.26 already defaults to
+# cancun; pinned here so the guard's opcodes are emitted regardless of toolchain default drift.
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 1_000_000
+# Stack-too-deep in receiveFlashLoan's hop loop needs the IR pipeline. viaIR is a
+# codegen change only — it does not alter the ABI or the pinned `execute` selector.
+via_ir = true
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/",
+]
+# Read access to the engine-built calldata fixture (emitted by the Rust builder).
+fs_permissions = [{ access = "read", path = "./test/fixtures" }]
+# The executor defines all its interfaces inline (no external imports), so no
+# remappings or installed libraries are required for `forge build`.
+# Harness usage:
+#   cd contracts && forge build      # compile MantisExecutor.sol
+#   cd contracts && forge test       # run the self-contained selector/ABI tests
+
+# --- Anvil fork-replay harness (Phase 1: download-once disk cache) ---
+# Pinning a fork block makes forge/anvil cache ALL fork reads to
+# ~/.foundry/cache/rpc/arbitrum/<block>/storage.json, so re-runs hit disk (0 RPC).
+[rpc_endpoints]
+arbitrum = "${ARBITRUM_RPC_URL}"
+
+[profile.default.rpc_storage_caching]
+chains = ["arbitrum"]
+endpoints = "all"

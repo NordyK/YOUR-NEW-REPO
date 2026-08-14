@@ -1,0 +1,37 @@
+[package]
+name = "engine-rpc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+engine-amm = { path = "../engine-amm" }
+engine-state = { path = "../engine-state" }
+engine-feed = { path = "../engine-feed" }
+engine-gas = { path = "../engine-gas" }
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+faster-hex = { workspace = true }
+ureq = { workspace = true }
+tracing = { workspace = true }
+tiny-keccak = { workspace = true }
+arrayvec = { workspace = true }
+
+[dev-dependencies]
+faster-hex = { workspace = true }
+engine-feed = { path = "../engine-feed" }
+engine-amm = { path = "../engine-amm" }
+engine-sim = { path = "../engine-sim" }
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+
+[lints]
+workspace = true

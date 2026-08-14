@@ -1,0 +1,40 @@
+{
+  "analysis": "lb_traversal_cap_sufficiency",
+  "question": "Does MAX_TRAVERSAL_BINS=50 silently drop profitable Trader Joe LB arbs?",
+  "source": {
+    "table": "trader_joe_v2_1_arbitrum.LBPair_evt_Swap",
+    "dune_queries": [7736963, 7736970],
+    "window": "evt_block_time >= 2026-01-01",
+    "method": "per-swap bins crossed = abs(active bin id - previous swap's active id); LB active id only moves via swaps, so consecutive-swap id deltas equal that swap's traversal depth"
+  },
+  "distribution": {
+    "total_swaps": 593935,
+    "swaps_over_50_bins": 86,
+    "swaps_over_100_bins": 76,
+    "frac_over_50_bins": 0.0001448,
+    "max_bins": 6935,
+    "p99_bins": 1,
+    "p999_bins": 2,
+    "p9999_bins": 220
+  },
+  "tail_characterization": {
+    "comment": "the 86 swaps that exceed 50 bins are micro-notional dust on thin/exotic pairs",
+    "max_usd_leg_among_over_50": 932,
+    "pairs_seen": ["USDV", "USDC/USDC.e", "WETH", "USD₮0", "TIA.n", "STG"],
+    "dominant_outlier": "USDV (max 6935 bins, max ~$1.61 notional) — a low-liquidity stablecoin whose bins are nearly empty",
+    "classification": "micro_notional_thin_or_exotic_pairs_not_profitable_arbs"
+  },
+  "safety": {
+    "kernel_behavior_at_cap": "loop breaks at MAX_TRAVERSAL_BINS and returns LBSwapResult with remaining_in = unfilled amount (NO fabricated full fill / NO over-quote)",
+    "caller_behavior": "a capped swap has remaining_in > 0 and is treated as None/reject (fail-closed) — proven by crates/engine-amm/tests/trader_joe_lb_traversal_cap.rs",
+    "failure_mode": "false_negative_only (miss a micro-arb); never false_positive over-quote (no capital at risk)"
+  },
+  "decision": "keep_50_economically_justified",
+  "rationale": "50 bins covers 99.985% of all LB swaps (p99.9 = 2 bins). The 0.0145% tail is micro-notional (<= $932, mostly << $60) on thin/exotic pairs — economically immaterial as atomic arbs. Raising the cap would add snapshot RPC cost (the same constant sets the +/-50 bin snapshot window in engine-rpc/lb_snapshot.rs) to chase a negligible tail, while the cap can only ever false-negative. Keep 50; document the bound; keep fail-closed.",
+  "production_constant": {
+    "file": "crates/engine-amm/src/trader_joe_lb.rs",
+    "name": "MAX_TRAVERSAL_BINS",
+    "value": 50,
+    "couples": "kernel traversal cap AND the +/-MAX_TRAVERSAL_BINS snapshot window in crates/engine-rpc/src/lb_snapshot.rs"
+  }
+}

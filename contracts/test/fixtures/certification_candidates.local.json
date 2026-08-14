@@ -1,0 +1,396 @@
+{
+  "source": "anvil/anvil_catalog.csv",
+  "candidate_status": "mixed_discovery_and_exact_prefix_replay",
+  "same_venue_status": "open_catalog_has_no_single_family_hop_rows",
+  "minimum_required_candidates": {
+    "two_hop": 10,
+    "three_hop": 10,
+    "four_hop": 10,
+    "cross_venue": 10,
+    "same_venue_from_catalog": 0
+  },
+  "candidates": [
+    {
+      "block_number": 462905550,
+      "tx_hash": "0x54d481e9d9138fba83cf7607a808a59a53da2e1059a79ea49d67d4a1819f65fd",
+      "hop_count": 2,
+      "families": ["gammaswap", "pancakeswap"],
+      "token_path": ["PENDLE", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462909245,
+      "tx_hash": "0xd7b25bba082cb2d9afce3a3ec7b882482f976bedb73df2883e9ed4e108a52557",
+      "hop_count": 2,
+      "families": ["camelot", "uniswap"],
+      "token_path": ["USDC", "WBTC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462910971,
+      "tx_hash": "0xa942fbe39f8ac8957463b26938c578f83db38e65a0c9ab6c680951c78c7ec0c1",
+      "hop_count": 2,
+      "families": ["camelot", "pancakeswap"],
+      "token_path": ["WBTC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462912543,
+      "tx_hash": "0x66ee90ce43708db094893708f6ef1c10271f66866fda19976f7c39ebd83de18e",
+      "hop_count": 2,
+      "families": ["dodo", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462915616,
+      "tx_hash": "0x448f66c879e03f2b64bdd14b05641b6b29106e78b536f02d14c93cd338228b3a",
+      "hop_count": 2,
+      "families": ["pancakeswap", "uniswap"],
+      "token_path": ["WBTC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462916013,
+      "tx_hash": "0x0115b036b5761cb187d4c81c76b21816d05da92afc57470bd2f2514c50351dc3",
+      "hop_count": 2,
+      "families": ["camelot", "uniswap"],
+      "token_path": ["WBTC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462927392,
+      "tx_hash": "0xde56ce733153459734de15cf3060bcde68218cc1972f85226ed68eeafc13a820",
+      "hop_count": 2,
+      "families": ["pancakeswap", "uniswap"],
+      "token_path": ["USDC", "WBTC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462940342,
+      "tx_hash": "0xbc06c4d85722dc6ce4662c566b330e5ef10810863776e33e7f80e010bfed6ea3",
+      "hop_count": 2,
+      "families": ["camelot", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462941921,
+      "tx_hash": "0x6050213341b9653003913aa442898a13c61fcfd5b5b932ff86437e5599bed4d5",
+      "hop_count": 2,
+      "families": ["sushiswap", "uniswap"],
+      "token_path": ["ARB", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462941960,
+      "tx_hash": "0x696e8cfe05470f6465d0ef16add3fe951306d5c7737ec13ae0f9dbaf322ad8d3",
+      "hop_count": 2,
+      "families": ["camelot", "solidly"],
+      "token_path": ["USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463013008,
+      "tx_hash": "0x065fe8afd83c9807958dfc41e932e7d9eaea2df3f08be5dd8a55d2544fc2cbc8",
+      "hop_count": 2,
+      "families": ["balancer", "camelot"],
+      "token_path": ["USDC", "wstETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463054604,
+      "tx_hash": "0x512ebe483c44e3dac770c4441f250f62f1183609d7a8785fec1d85efa4770882",
+      "hop_count": 2,
+      "families": ["maverick", "pancakeswap"],
+      "token_path": ["USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463104646,
+      "tx_hash": "0xbb4607199ca151974147b971ee69194102687fcfbddc1bcad594caa99a9fd166",
+      "hop_count": 2,
+      "families": ["fluid", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463400824,
+      "tx_hash": "0xcf8d189777c099ee45946392a6a0ef3997312d4226912529709883f86999c353",
+      "hop_count": 2,
+      "families": ["kyberswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462907520,
+      "tx_hash": "0x49fe181b6dd857ca871976ea2f3619acc41dae20858764bdf6cdb91c5962f6b0",
+      "hop_count": 3,
+      "families": ["pancakeswap", "uniswap"],
+      "token_path": ["PENDLE", "USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "reconstructed",
+      "profit_certification_status": "positive_realized",
+      "certification_artifact": "engine/contracts/test/MantisAnvilCatalogPositiveReplay.Fork.t.sol",
+      "realized_amount_raw": "9319862452660"
+    },
+    {
+      "block_number": 462908271,
+      "tx_hash": "0x0dc3abb2500465f0058f3f3c81804678fc9a5763ecb4f3cc78bb54cabac94ffa",
+      "hop_count": 3,
+      "families": ["trader_joe", "uniswap"],
+      "token_path": ["PENDLE", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462915168,
+      "tx_hash": "0x8b92e64434fe8cf136b144e0b04e03e0a6031ead6a588fc656f82482bff6333c",
+      "hop_count": 3,
+      "families": ["camelot", "sushiswap", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462919882,
+      "tx_hash": "0x91bc7aff0ee8ebb31320c223aee55d3c4c6493ab1b9e7c4639ffefea9cf42cfa",
+      "hop_count": 3,
+      "families": ["pancakeswap", "uniswap"],
+      "token_path": ["ARB", "PENDLE", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462929936,
+      "tx_hash": "0x60bea60f2c041a1a068ed469cf1aa9bc5cfe45af28c615037948f3a1a72b3b22",
+      "hop_count": 3,
+      "families": ["camelot", "uniswap"],
+      "token_path": ["USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462934364,
+      "tx_hash": "0x6e70d6aa63b3cd11bb0a2b24255eaa4d534582bce8262d7db7c4d5f481f01b2e",
+      "hop_count": 3,
+      "families": ["camelot", "pancakeswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462937883,
+      "tx_hash": "0xa2e6705411173cbf159f10f826693bdcd6ef5794d67a7cfc3cc0914324225d28",
+      "hop_count": 3,
+      "families": ["camelot", "native", "pancakeswap"],
+      "token_path": ["USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462943482,
+      "tx_hash": "0xc15b9024a3a7675e76d6f397322452db5bd8a2726dbb45ac555b64da10c4eb03",
+      "hop_count": 3,
+      "families": ["pancakeswap", "uniswap"],
+      "token_path": ["ARB", "WBTC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462967093,
+      "tx_hash": "0x6215df5d7ce0223b9701e2bbd165a0a06c93d9a4ad450e40ba1d8ab1158c4cd0",
+      "hop_count": 3,
+      "families": ["camelot", "pancakeswap", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462986124,
+      "tx_hash": "0xe58d7dea50f7a74a6d04889e9f8c15bf5b36a79d28d0f07b5e80e7afe1bac78d",
+      "hop_count": 3,
+      "families": ["camelot", "pancakeswap", "uniswap"],
+      "token_path": ["USDC", "WBTC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463066180,
+      "tx_hash": "0x8871a3128cbfe051e7c3fec6a81d213ac579fe880e1dd951d8ff403ed7a3d235",
+      "hop_count": 3,
+      "families": ["fluid", "pancakeswap", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463081554,
+      "tx_hash": "0x02253feb3778081bed4090b49005946baba85477b423153ea5a1f7f77f8810ec",
+      "hop_count": 3,
+      "families": ["balancer", "camelot"],
+      "token_path": ["ARB", "USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462946521,
+      "tx_hash": "0xed22ef3cbbe82ea63bf4f7ed8592648b4b846c7a84f1560c4cedb8fe32f4e5e5",
+      "hop_count": 4,
+      "families": ["camelot", "pancakeswap", "sushiswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462946578,
+      "tx_hash": "0xb93d138425095c5bb0c366db608585df7d2d60d41483946984a8d27779909f20",
+      "hop_count": 4,
+      "families": ["camelot", "ramses", "uniswap"],
+      "token_path": ["USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 462985323,
+      "tx_hash": "0xe3f13cf775a96131a768168fd348e5e5c3e5903cb91eafd775befce3c8faa9dd",
+      "hop_count": 4,
+      "families": ["pancakeswap", "sushiswap", "uniswap"],
+      "token_path": ["ARB", "USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463036611,
+      "tx_hash": "0xb61443621485fa6025eb8bf4a5228e89ea422eac9fb7a58c0c5bc9a8caf2bef5",
+      "hop_count": 4,
+      "families": ["camelot", "pancakeswap", "sushiswap", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463065005,
+      "tx_hash": "0xb786f8ea08269070e53dc933298c0bb99cc0d2594921728a9e95c0e859eaefcb",
+      "hop_count": 4,
+      "families": ["camelot", "uniswap"],
+      "token_path": ["USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463101711,
+      "tx_hash": "0x13371d71256888029819fb75cef0f8775f4a2474e1346bc80565a7d7e57510da",
+      "hop_count": 4,
+      "families": ["pancakeswap", "sushiswap", "uniswap"],
+      "token_path": ["ARB", "USDC", "WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463105093,
+      "tx_hash": "0xff6971c086b59e412a8841a2a5f2b9572df6545403aa0d5eb22dcfcc55e569dd",
+      "hop_count": 4,
+      "families": ["camelot", "pancakeswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463107189,
+      "tx_hash": "0x561615b25768f8a7748ef6cb7e9755129a1810b2501a0b084da45cedbc50454e",
+      "hop_count": 4,
+      "families": ["camelot", "pancakeswap", "sushiswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463146129,
+      "tx_hash": "0x3959bc55f69be0a5fdc7a07bc231f321fcec01f6d371c558864660d719dcc707",
+      "hop_count": 4,
+      "families": ["camelot", "pancakeswap", "sushiswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463189285,
+      "tx_hash": "0x2a3ce4d578ebc3c40894963a0cb8ce282abc156b7ca92e69a9c6f96f46c8d9c7",
+      "hop_count": 4,
+      "families": ["camelot", "fluid", "pancakeswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463213667,
+      "tx_hash": "0x650a8faded149313df8eecacd645ccfb58f69b245b0b46b5a5cf5235fe522df1",
+      "hop_count": 4,
+      "families": ["pancakeswap", "uniswap"],
+      "token_path": ["USDC"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    },
+    {
+      "block_number": 463231090,
+      "tx_hash": "0x58c4731c2fc40646b77826ca4775b71bb33df3ae461f40ea9386b14982d69915",
+      "hop_count": 4,
+      "families": ["camelot", "pancakeswap", "sushiswap", "uniswap"],
+      "token_path": ["WETH"],
+      "source": "anvil_catalog",
+      "route_reconstruction_status": "discovered",
+      "profit_certification_status": "untested"
+    }
+  ]
+}

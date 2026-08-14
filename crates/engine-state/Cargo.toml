@@ -1,0 +1,36 @@
+[package]
+name = "engine-state"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[features]
+# WI-06 F1: expose `StateWriterPermit::test_mint()` (the WILDCARD-branded test permit) to a
+# DOWNSTREAM crate's tests without exposing it to any production build. Enabled ONLY through a
+# downstream `[dev-dependencies] engine-state = { features = ["test-permit"] }` edge, so with
+# resolver v2 it is OFF for every normal `[dependencies]` build (no production `cargo build`
+# activates it). Default-off; no code is enabled here except the cfg on `test_mint`.
+test-permit = []
+
+[dependencies]
+engine-amm = { path = "../engine-amm" }
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+crossbeam-utils = { workspace = true }
+arc-swap = { workspace = true }
+arrayvec = { workspace = true }
+thiserror = { workspace = true }
+ahash = { workspace = true }
+hashbrown = { workspace = true }
+parking_lot = { workspace = true }
+serde = { workspace = true }
+
+[target.'cfg(loom)'.dev-dependencies]
+loom = "0.7"
+
+[lints]
+workspace = true

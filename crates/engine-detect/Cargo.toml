@@ -1,0 +1,42 @@
+[package]
+name = "engine-detect"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+engine-amm = { path = "../engine-amm" }
+engine-state = { path = "../engine-state" }
+engine-routes = { path = "../engine-routes" }
+engine-feed = { path = "../engine-feed" }
+engine-gas = { path = "../engine-gas" }
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+arrayvec = { workspace = true }
+smallvec = { workspace = true }
+thiserror = { workspace = true }
+ahash = { workspace = true }
+hashbrown = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+# WI-06 round 3: engine-detect's tests build a bare `Universe` via `UniverseBuilder::build`, now
+# crate-internal to engine-state in production and exposed to downstream tests ONLY through the
+# `test-permit` feature (same gate as `test_mint`). Dev-dependency edge ⇒ OFF in every production
+# `[dependencies]` build (resolver v2), so it never expands the release surface.
+engine-state = { path = "../engine-state", features = ["test-permit"] }
+
+[[bench]]
+name = "classifier"
+harness = false
+
+[[bench]]
+name = "filters"
+harness = false
+
+[lints]
+workspace = true

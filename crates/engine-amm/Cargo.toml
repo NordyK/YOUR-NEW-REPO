@@ -1,0 +1,46 @@
+[package]
+name = "engine-amm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+# Canonical U256/Address/B256 type layer. `alloy_primitives::U256 = ruint::Uint<256,4>`,
+# so importing alloy here is a wrapper change, not a numeric change.
+alloy-primitives = { workspace = true }
+# Raw ruint stays for the wider-precision (U512) path — alloy does not publicly alias
+# wider integers, so the U512 sites import ruint directly.
+ruint = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+ahash = { workspace = true }
+once_cell = { workspace = true }
+smallvec = { workspace = true }
+
+[dev-dependencies]
+hdrhistogram = { workspace = true }
+criterion = { workspace = true }
+proptest = { workspace = true }
+
+[[bench]]
+name = "v2"
+harness = false
+
+[[bench]]
+name = "v3"
+harness = false
+
+[[bench]]
+name = "curve"
+harness = false
+
+[[bench]]
+name = "families"
+harness = false
+
+[lints]
+workspace = true

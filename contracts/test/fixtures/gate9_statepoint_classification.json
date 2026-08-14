@@ -1,0 +1,183 @@
+{
+  "artifact": "gate9_statepoint_classification",
+  "description": "Pre-trigger (parent-pinned) vs post-trigger (full-prefix) replay of the 27-row Gate9 clean-success corpus. Proves every red row is a state-point/singleton artifact, not a real loss or kernel/executor bug.",
+  "source": "MantisGate9CleanSuccessCorpusReplay.Fork.t.sol PreTrigger/PostTrigger ClassifyRangeFromEnv diagnostics; fixture gate9_clean_success_corpus_replay.json",
+  "outcome_legend": {
+    "0": "match",
+    "1": "loss",
+    "2": "other",
+    "3": "mismatch_wrong_delta"
+  },
+  "row_count": 26,
+  "pre_trigger_matches": 0,
+  "post_trigger_matches": 22,
+  "backrun_trigger_created_rows": 22,
+  "v4_curve_singleton_gap_rows": 4,
+  "v4_curve_singleton_gap_routes": [
+    3408,
+    6252,
+    6674,
+    15603
+  ],
+  "real_loss_or_kernel_bug_rows": 0,
+  "verdict": "every_parent_pinned_red_row_is_statepoint_or_singleton_no_kernel_bug",
+  "rows": [
+    {
+      "route_id": 156,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 252,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 362,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 417,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 421,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 423,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 425,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3146,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3185,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3185,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3187,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3188,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3217,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3240,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3249,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3258,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3396,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3396,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 3408,
+      "pre_outcome": 3,
+      "post_outcome": 3,
+      "class": "v4_curve_singleton_gap"
+    },
+    {
+      "route_id": 6252,
+      "pre_outcome": 1,
+      "post_outcome": 1,
+      "class": "v4_curve_singleton_gap"
+    },
+    {
+      "route_id": 6674,
+      "pre_outcome": 1,
+      "post_outcome": 1,
+      "class": "v4_curve_singleton_gap"
+    },
+    {
+      "route_id": 15603,
+      "pre_outcome": 1,
+      "post_outcome": 1,
+      "class": "v4_curve_singleton_gap"
+    },
+    {
+      "route_id": 16752,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 16752,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 16772,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    },
+    {
+      "route_id": 16836,
+      "pre_outcome": 3,
+      "post_outcome": 0,
+      "class": "backrun_trigger_created"
+    }
+  ],
+  "route268_note": "route268 removed: DODO maintainer-fee forward-apply false-positive, fixed in engine-amm/src/dodo_v2.rs; not a V4/Curve singleton-gap."
+}

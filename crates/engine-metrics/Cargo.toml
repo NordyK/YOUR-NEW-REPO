@@ -1,0 +1,23 @@
+[package]
+name = "engine-metrics"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+crossbeam-utils = { workspace = true }
+hdrhistogram = { workspace = true }
+metrics = { workspace = true }
+metrics-exporter-prometheus = { workspace = true }
+tracing = { workspace = true }
+parking_lot = { workspace = true }
+# Cold-path only: the WebhookPager POSTs a breach alert at most once per breach. ureq is the
+# workspace's blocking HTTP client (already built for engine-rpc).
+ureq = { workspace = true }
+
+[lints]
+workspace = true

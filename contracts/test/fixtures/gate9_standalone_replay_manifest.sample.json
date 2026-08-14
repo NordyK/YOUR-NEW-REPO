@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "classification": "schema_example_not_release_proof",
+  "candidates": [
+    {
+      "candidate_id": "seq:0:example",
+      "route_id": 0,
+      "tx_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "transaction_index": 0,
+      "snapshot_block": 465686728,
+      "block_env": 465686729,
+      "block_timestamp": 0,
+      "state_point": "replay_sequence",
+      "tokens": [],
+      "pools": [],
+      "exchange_ids": [],
+      "exchange_metadata": [],
+      "input_amount": "0",
+      "quote_output": "0",
+      "gross_profit_wei": "0",
+      "estimated_gas_wei": "0",
+      "total_gas_wei": "0",
+      "l1_fee_wei": "0",
+      "l2_gas_price_wei": "0",
+      "gas_used_units": 0,
+      "measured_execution_gas_used": 0,
+      "raw_calldata_bytes": 0,
+      "net_profit_wei": "0",
+      "min_profit": "0",
+      "gas_limit": 0,
+      "mantis_executor": "0x0000000000000000000000000000000000000000",
+      "payee": "0x0000000000000000000000000000000000000000",
+      "mantis_calldata": "0x",
+      "executor_calldata": "0x",
+      "calldata": "0x",
+      "changed_slots": [],
+      "revm_enabled": true,
+      "revm_result": "schema_example",
+      "balance_delta_wei": "0",
+      "reject_reason": "schema_example"
+    }
+  ]
+}

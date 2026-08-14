@@ -1,0 +1,40 @@
+[package]
+name = "engine-revm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+engine-amm = { path = "../engine-amm" }
+engine-state = { path = "../engine-state" }
+engine-routes = { path = "../engine-routes" }
+engine-gas = { path = "../engine-gas" }
+engine-sim = { path = "../engine-sim" }
+ruint = { workspace = true }
+arrayvec = { workspace = true }
+thiserror = { workspace = true }
+ahash = { workspace = true }
+hashbrown = { workspace = true }
+tiny-keccak = { workspace = true }
+revm = { version = "41.0.0", default-features = false, features = ["std"] }
+# 2026-07-10 revmc AOT/JIT (feature-gated, default OFF — normal builds need no LLVM).
+# Pinned to revmc main (revm 41-compatible, JitEvm runtime). LLVM 22 required to BUILD
+# with this feature (laptop: llvm-config-22 = 22.1.6; box: install llvm22 before enabling).
+revmc = { git = "https://github.com/paradigmxyz/revmc", rev = "b5b60c1491c4cda92626e01e8e838bf29e53736a", default-features = false, features = ["llvm-prefer-dynamic"], optional = true }
+alloy-primitives = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+hdrhistogram = { workspace = true }
+# revmc_ab corpus-replay example: parse the recorded-candidate JSONL (dev/example only).
+serde_json = { workspace = true }
+
+[lints]
+workspace = true
+
+[features]
+revmc = ["dep:revmc"]

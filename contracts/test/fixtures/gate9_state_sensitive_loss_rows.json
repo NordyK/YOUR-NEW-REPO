@@ -1,0 +1,346 @@
+{
+  "artifact": "gate9_state_sensitive_loss_rows",
+  "source_csv": "Codex/STATE_POINT_SENSITIVE_LOSS_ROWS_2026-06-14.csv",
+  "snapshot_block": 465686728,
+  "block_env": 465686729,
+  "state_point": "replay_sequence",
+  "status": "exact_sequence_replay_blocked_by_missing_standalone_inputs",
+  "rows": [
+    {
+      "route_id": 3258,
+      "detector_block_tag": 22207819,
+      "hop_count": 3,
+      "exchange_ids": [0, 9, 0],
+      "family_path": ["UniswapV3", "AlgebraV19", "UniswapV3"],
+      "start_is_weth": false,
+      "input_amount": "4576003",
+      "gross_profit": "9199",
+      "foundry_loss_wei": "-3104",
+      "occurrences": 6,
+      "success_occurrences": 1,
+      "loss_occurrences": 5,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "10827",
+      "last_loss_seq": 23,
+      "last_loss_shortfall_wei": "12240",
+      "last_gas_used": 917202,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c",
+        "0xb1026b8e7276e7ac75410f1fcbbe21796e8f7526",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f"
+      ]
+    },
+    {
+      "route_id": 3249,
+      "detector_block_tag": 22207819,
+      "hop_count": 3,
+      "exchange_ids": [0, 6, 0],
+      "family_path": ["UniswapV3", "PancakeV3", "UniswapV3"],
+      "start_is_weth": false,
+      "input_amount": "7367897",
+      "gross_profit": "14084",
+      "foundry_loss_wei": "-6493",
+      "occurrences": 6,
+      "success_occurrences": 1,
+      "loss_occurrences": 5,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "16703",
+      "last_loss_seq": 23,
+      "last_loss_shortfall_wei": "20361",
+      "last_gas_used": 931064,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c",
+        "0xd9e2a1a61b6e61b275cec326465d417e52c1b95c",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f"
+      ]
+    },
+    {
+      "route_id": 3240,
+      "detector_block_tag": 22207819,
+      "hop_count": 3,
+      "exchange_ids": [0, 25, 0],
+      "family_path": ["UniswapV3", "SushiV3", "UniswapV3"],
+      "start_is_weth": false,
+      "input_amount": "5199825",
+      "gross_profit": "9641",
+      "foundry_loss_wei": "-4879",
+      "occurrences": 6,
+      "success_occurrences": 1,
+      "loss_occurrences": 5,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "11491",
+      "last_loss_seq": 23,
+      "last_loss_shortfall_wei": "14709",
+      "last_gas_used": 743530,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c",
+        "0xf3eb87c1f6020982173c908e7eb31aa66c1f0296",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f"
+      ]
+    },
+    {
+      "route_id": 16752,
+      "detector_block_tag": 22207819,
+      "hop_count": 4,
+      "exchange_ids": [0, 9, 0, 0],
+      "family_path": ["UniswapV3", "AlgebraV19", "UniswapV3", "UniswapV3"],
+      "start_is_weth": true,
+      "input_amount": "64195465398059420",
+      "gross_profit": "91429889381507",
+      "foundry_loss_wei": "-88101001629867",
+      "occurrences": 11,
+      "success_occurrences": 2,
+      "loss_occurrences": 9,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "114129133025831",
+      "last_loss_seq": 28,
+      "last_loss_shortfall_wei": "211128643479660",
+      "last_gas_used": 1149762,
+      "token_path": [
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+      ],
+      "pool_path": [
+        "0xc6f780497a95e246eb9449f5e4770916dcd6396a",
+        "0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f",
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c"
+      ]
+    },
+    {
+      "route_id": 3185,
+      "detector_block_tag": 22207819,
+      "hop_count": 3,
+      "exchange_ids": [0, 0, 0],
+      "family_path": ["UniswapV3", "UniswapV3", "UniswapV3"],
+      "start_is_weth": false,
+      "input_amount": "35688324",
+      "gross_profit": "30536",
+      "foundry_loss_wei": "-62324",
+      "occurrences": 10,
+      "success_occurrences": 2,
+      "loss_occurrences": 8,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "43200",
+      "last_loss_seq": 25,
+      "last_loss_shortfall_wei": "79695",
+      "last_gas_used": 797193,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c",
+        "0xc6962004f452be9203591991d15f6b388e09e8d0",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f"
+      ]
+    },
+    {
+      "route_id": 362,
+      "detector_block_tag": 22207820,
+      "hop_count": 2,
+      "exchange_ids": [23, 0],
+      "family_path": ["DodoV2", "UniswapV3"],
+      "start_is_weth": true,
+      "input_amount": "11718742621174166240",
+      "gross_profit": "2837294824172502",
+      "foundry_loss_wei": "-4494158200503197",
+      "occurrences": 8,
+      "success_occurrences": 1,
+      "loss_occurrences": 7,
+      "first_success_seq": 3,
+      "first_balance_delta_wei": "1736990135153531",
+      "last_loss_seq": 28,
+      "last_loss_shortfall_wei": "27263168806620279",
+      "last_gas_used": 630647,
+      "token_path": [
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+      ],
+      "pool_path": [
+        "0x1666ea6e83bcc3473111732ef086ba47e6eddeb7",
+        "0xc6962004f452be9203591991d15f6b388e09e8d0"
+      ]
+    },
+    {
+      "route_id": 3187,
+      "detector_block_tag": 22207820,
+      "hop_count": 3,
+      "exchange_ids": [0, 0, 6],
+      "family_path": ["UniswapV3", "UniswapV3", "PancakeV3"],
+      "start_is_weth": false,
+      "input_amount": "13117795",
+      "gross_profit": "23010",
+      "foundry_loss_wei": "-22248",
+      "occurrences": 4,
+      "success_occurrences": 1,
+      "loss_occurrences": 3,
+      "first_success_seq": 3,
+      "first_balance_delta_wei": "24247",
+      "last_loss_seq": 25,
+      "last_loss_shortfall_wei": "29222",
+      "last_gas_used": 911847,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c",
+        "0xc6962004f452be9203591991d15f6b388e09e8d0",
+        "0x843ac8dc6d34aeb07a56812b8b36429ee46bdd07"
+      ]
+    },
+    {
+      "route_id": 3185,
+      "detector_block_tag": 22207820,
+      "hop_count": 3,
+      "exchange_ids": [0, 0, 0],
+      "family_path": ["UniswapV3", "UniswapV3", "UniswapV3"],
+      "start_is_weth": false,
+      "input_amount": "35688324",
+      "gross_profit": "30536",
+      "foundry_loss_wei": "-115793",
+      "occurrences": 10,
+      "success_occurrences": 2,
+      "loss_occurrences": 8,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "43200",
+      "last_loss_seq": 25,
+      "last_loss_shortfall_wei": "79695",
+      "last_gas_used": 797193,
+      "token_path": [
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ],
+      "pool_path": [
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c",
+        "0xc6962004f452be9203591991d15f6b388e09e8d0",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f"
+      ]
+    },
+    {
+      "route_id": 16772,
+      "detector_block_tag": 22207821,
+      "hop_count": 4,
+      "exchange_ids": [0, 9, 6, 0],
+      "family_path": ["UniswapV3", "AlgebraV19", "PancakeV3", "UniswapV3"],
+      "start_is_weth": true,
+      "input_amount": "93350874800907214",
+      "gross_profit": "229745081297361",
+      "foundry_loss_wei": "-19648556770958",
+      "occurrences": 7,
+      "success_occurrences": 1,
+      "loss_occurrences": 6,
+      "first_success_seq": 4,
+      "first_balance_delta_wei": "136009527835750",
+      "last_loss_seq": 22,
+      "last_loss_shortfall_wei": "286112068379021",
+      "last_gas_used": 1209559,
+      "token_path": [
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+      ],
+      "pool_path": [
+        "0xc6f780497a95e246eb9449f5e4770916dcd6396a",
+        "0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1",
+        "0x843ac8dc6d34aeb07a56812b8b36429ee46bdd07",
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c"
+      ]
+    },
+    {
+      "route_id": 16752,
+      "detector_block_tag": 22207821,
+      "hop_count": 4,
+      "exchange_ids": [0, 9, 0, 0],
+      "family_path": ["UniswapV3", "AlgebraV19", "UniswapV3", "UniswapV3"],
+      "start_is_weth": true,
+      "input_amount": "64195465398059420",
+      "gross_profit": "91429889381507",
+      "foundry_loss_wei": "-282352590645787",
+      "occurrences": 11,
+      "success_occurrences": 2,
+      "loss_occurrences": 9,
+      "first_success_seq": 2,
+      "first_balance_delta_wei": "114129133025831",
+      "last_loss_seq": 28,
+      "last_loss_shortfall_wei": "211128643479660",
+      "last_gas_used": 1149762,
+      "token_path": [
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+      ],
+      "pool_path": [
+        "0xc6f780497a95e246eb9449f5e4770916dcd6396a",
+        "0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1",
+        "0x0e4831319a50228b9e450861297ab92dee15b44f",
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c"
+      ]
+    },
+    {
+      "route_id": 21919,
+      "detector_block_tag": 22207821,
+      "hop_count": 4,
+      "exchange_ids": [0, 9, 6, 0],
+      "family_path": ["UniswapV3", "AlgebraV19", "PancakeV3", "UniswapV3"],
+      "start_is_weth": true,
+      "input_amount": "47146747792887691",
+      "gross_profit": "67748199127778",
+      "foundry_loss_wei": "-169644688870345",
+      "occurrences": 6,
+      "success_occurrences": 1,
+      "loss_occurrences": 5,
+      "first_success_seq": 4,
+      "first_balance_delta_wei": "20823057415001",
+      "last_loss_seq": 22,
+      "last_loss_shortfall_wei": "192174215305502",
+      "last_gas_used": 1189879,
+      "token_path": [
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+      ],
+      "pool_path": [
+        "0x92c63d0e701caae670c9415d91c474f686298f00",
+        "0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1",
+        "0x843ac8dc6d34aeb07a56812b8b36429ee46bdd07",
+        "0x2f5e87c9312fa29aed5c179e456625d79015299c"
+      ]
+    }
+  ]
+}

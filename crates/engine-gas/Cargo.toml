@@ -1,0 +1,20 @@
+[package]
+name = "engine-gas"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+alloy-primitives = { workspace = true }
+ruint = { workspace = true }
+arc-swap = { workspace = true }
+crossbeam-utils = { workspace = true }
+thiserror = { workspace = true }
+brotli = { workspace = true }
+
+[lints]
+workspace = true

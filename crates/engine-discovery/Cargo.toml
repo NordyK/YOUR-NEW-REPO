@@ -1,0 +1,28 @@
+[package]
+name = "engine-discovery"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+engine-rpc = { path = "../engine-rpc" }
+engine-state = { path = "../engine-state" }
+engine-feed = { path = "../engine-feed" }
+ruint = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+faster-hex = { workspace = true }
+tracing = { workspace = true }
+tiny-keccak = { workspace = true }
+ahash = { workspace = true }
+
+[dev-dependencies]
+
+[lints]
+workspace = true
