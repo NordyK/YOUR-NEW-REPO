@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Earth Explorer</title>
+  <meta name="description" content="An interactive 3D globe of Earth's natural wonders, landmarks, wildlife, natural resources and history." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>" />
+</head>
+<body>
+  <div id="globe"></div>
+
+  <!-- Loading screen -->
+  <div id="loader">
+    <div class="loader-earth">🌍</div>
+    <div class="loader-text">Spinning up the planet…</div>
+  </div>
+
+  <!-- Top bar -->
+  <header id="topbar">
+    <button id="menu-toggle" class="icon-btn" title="Show / hide menu" aria-label="Menu">☰</button>
+    <div class="brand"><span class="brand-icon">🌍</span><span class="brand-name">Earth&nbsp;Explorer</span></div>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search wonders, landmarks, animals, countries…" autocomplete="off" />
+      <div id="search-results" class="hidden"></div>
+    </div>
+    <div class="top-controls">
+      <select id="basemap" title="Map style">
+        <option value="satellite">🛰️ Satellite (zoomable)</option>
+        <option value="bluemarble">🌎 Blue Marble</option>
+        <option value="topo">🗺️ Terrain map</option>
+        <option value="streets">🏙️ Street map</option>
+        <option value="night">🌃 City lights</option>
+      </select>
+      <button id="toggle-borders" class="chip on" title="Country borders">Borders</button>
+      <button id="toggle-labels" class="chip on" title="Marker labels">Labels</button>
+      <button id="toggle-rotate" class="chip" title="Auto-rotate the globe">Spin</button>
+      <button id="help-btn" class="icon-btn" title="How to use">?</button>
+    </div>
+  </header>
+
+  <!-- Left menu -->
+  <aside id="sidebar">
+    <div class="side-tabs" role="tablist">
+      <button class="side-tab active" data-tab="wonders" title="Natural wonders">🏔️<span>Wonders</span></button>
+      <button class="side-tab" data-tab="landmarks" title="Landmarks">🏛️<span>Landmarks</span></button>
+      <button class="side-tab" data-tab="animals" title="Animals">🐾<span>Animals</span></button>
+      <button class="side-tab" data-tab="resources" title="Natural resources">⛏️<span>Resources</span></button>
+      <button class="side-tab" data-tab="history" title="History & change">⏳<span>History</span></button>
+    </div>
+    <div id="side-content"></div>
+  </aside>
+
+  <!-- Right info panel -->
+  <aside id="info" class="hidden">
+    <button id="info-close" class="icon-btn" title="Close" aria-label="Close">✕</button>
+    <div id="info-body"></div>
+  </aside>
+
+  <!-- Legend -->
+  <div id="legend" class="hidden"></div>
+
+  <!-- Timeline -->
+  <footer id="timeline">
+    <div class="tl-top">
+      <button id="tl-play" class="icon-btn play" title="Play through time">▶</button>
+      <div class="tl-year-wrap">
+        <div id="tl-year">2026</div>
+        <div id="tl-era"></div>
+      </div>
+      <div class="tl-jumps">
+        <button data-jump="2026">Today</button>
+        <button data-jump="2025">1 yr ago</button>
+        <button data-jump="1926">100 yrs</button>
+        <button data-jump="1026">1,000 yrs</button>
+        <button data-jump="-2500">Pyramids</button>
+        <button data-jump="-20000">Ice Age</button>
+      </div>
+    </div>
+    <div class="tl-slider-wrap">
+      <input id="tl-slider" type="range" min="0" max="1000" step="1" value="1000" aria-label="Year" />
+      <div id="tl-ticks"></div>
+    </div>
+    <div id="tl-stats"></div>
+    <div id="tl-events"></div>
+  </footer>
+
+  <!-- Help -->
+  <div id="help" class="modal hidden">
+    <div class="modal-card">
+      <button class="icon-btn modal-close" title="Close">✕</button>
+      <h2>🌍 Welcome to Earth Explorer</h2>
+      <ul>
+        <li><b>Drag</b> to spin the globe, <b>scroll / pinch</b> to zoom. In <i>Satellite</i> mode you can zoom right down to individual buildings.</li>
+        <li>Use the <b>menu on the left</b> to switch layers: natural wonders, landmarks, animals, natural resources and history.</li>
+        <li><b>Animals:</b> tick one or many species to paint where they live, see animated 3D models on the globe and open a 3D viewer with facts.</li>
+        <li><b>Resources:</b> pick oil, gold, lithium… to see the biggest deposits and colour the top producing countries.</li>
+        <li><b>Click anything</b> — a marker, a country, an animal range — for photos, facts and figures.</li>
+        <li><b>Time machine:</b> drag the timeline to go back up to 22,000 years. Borders, landmarks, ice sheets, coastlines, lakes, forests, extinct animals and world statistics change with the year.</li>
+      </ul>
+      <p class="muted small">Data: Natural Earth, historical-basemaps (A. Ourednik, GPL-3.0), Wikipedia, NOAA, NASA, NSIDC, USGS, IUCN, UN. Imagery © Esri, Maxar, Earthstar Geographics; NASA Blue Marble. 3D models: three.js examples (Horse, Flamingo, Parrot, Stork by mirada / ro.me), Khronos glTF Fox (CC0 / CC-BY 4.0 @tomkranis); other animals are procedurally generated. Animal ranges are simplified approximations.</p>
+      <button class="primary modal-close">Start exploring</button>
+    </div>
+  </div>
+
+  <div id="attribution">Imagery © Esri, Maxar, Earthstar Geographics · Data: Natural Earth, Wikipedia, NOAA, NASA</div>
+  <div id="toast" class="hidden"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
