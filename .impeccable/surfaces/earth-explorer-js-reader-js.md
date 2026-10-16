@@ -17,8 +17,8 @@ OWN-WORLD: Night-atlas ink panels (#0c1220 on #05080f) with one brass accent (#f
 
 STORY: A learner opens an item from the globe, reads the explanation, sees where and when it sits in the margin, then jumps back to the globe, the year or a related place.
 
-FIRST VIEWPORT: A slim running head (kind · place · year on the left; Contents, Back to globe and Wikipedia on the right). Under it, the title and a one-paragraph standfirst, then the lead photo at full column width. The column is about 68ch. A 240px outer margin carries the locator (coordinates, Show on globe), key figures, dates as timeline jumps, related items and sources.
+FIRST VIEWPORT: A slim running head (kind · place · year on the left; Contents, Listen, Wikipedia and Back to globe on the right; Listen reads the article aloud, per PRODUCT accessibility: learners who read less fluently or prefer listening). Under it, the title and a one-paragraph standfirst, then the lead photo at full column width. The column is about 68ch. A 240px outer margin carries the locator (coordinates, Show on globe), key figures, dates as timeline jumps, related items and sources.
 
-FORM: #5 of 7, encyclopedia entry with margin apparatus. seed: none (unavailable)
+FORM: #5 of 7, encyclopedia entry with margin apparatus. seed: c540a7711f0df9a7
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

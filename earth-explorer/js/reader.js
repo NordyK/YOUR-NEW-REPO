@@ -51,6 +51,7 @@ export function createReader(ctx) {
     else if (act === 'item') { close(); openByKey(b.dataset.key); }
     else if (act === 'retry') open(current, true);
     else if (act === 'listen') toggleSpeech(b);
+    else if (act === 'key') { e.preventDefault(); const t = root.querySelector('#ap-' + b.dataset.k)?.closest('.ap'); t?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); t?.classList.add('flash'); setTimeout(() => t?.classList.remove('flash'), 1200); }
     else if (act === 'toc') { const t = root.querySelector('#' + CSS.escape(b.dataset.id)); t?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); }
   });
   const toastYear = (y) => ctx.toast?.(`Time machine set to ${fmtYear(y)}. Close the reader to see the globe in that year.`);
@@ -129,32 +130,82 @@ export function createReader(ctx) {
     return { body: body.innerHTML, toc, standfirst };
   }
 
-  function margin({ item, sum, title }) {
+  // Index letters key a margin note to the place in the text it annotates; notes with no anchor get none.
+  function margin({ item, sum, title, keys = {} }) {
     const parts = [];
-    let k = 0;
-    const key = () => String.fromCharCode(97 + k++);
+    const key = (name) => (keys[name] ? `<span class="key" id="ap-${keys[name]}">${keys[name]}</span>` : '');
     const coords = item?.lat != null ? [item.lat, item.lng] : sum?.coordinates ? [sum.coordinates.lat, sum.coordinates.lon] : null;
     if (coords) {
-      parts.push(`<section class="ap"><h3><span class="key">${key()}</span>Where</h3>
+      parts.push(`<section class="ap"><h3>${key('where')}Where</h3>
         <p class="num">${Math.abs(coords[0]).toFixed(3)}° ${coords[0] >= 0 ? 'N' : 'S'}, ${Math.abs(coords[1]).toFixed(3)}° ${coords[1] >= 0 ? 'E' : 'W'}</p>
         ${item?.place ? `<p>${esc(item.place)}</p>` : ''}
         <button class="btn" data-r="globe" data-ll="${coords[0]},${coords[1]}">${icon('crosshair')}Show on globe</button></section>`);
     }
     if (item?.figures && Object.keys(item.figures).length) {
-      parts.push(`<section class="ap"><h3><span class="key">${key()}</span>Key figures</h3><dl>${Object.entries(item.figures).filter(([, v]) => v != null && v !== '').map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl></section>`);
+      parts.push(`<section class="ap"><h3>${key('figures')}Key figures</h3><dl>${Object.entries(item.figures).filter(([, v]) => v != null && v !== '').map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl></section>`);
     }
     if (item?.dates?.length) {
-      parts.push(`<section class="ap"><h3><span class="key">${key()}</span>In time</h3>${item.dates.map((d) => `<button class="ap-row" data-r="year" data-year="${d.year}"><span class="num">${esc(fmtYear(d.year))}</span><span>${esc(d.label)}</span></button>`).join('')}<p class="ap-note">Choose a date to set the time machine.</p></section>`);
+      parts.push(`<section class="ap"><h3>${key('time')}In time</h3>${item.dates.map((d) => `<button class="ap-row" data-r="year" data-year="${d.year}"><span class="num">${esc(fmtYear(d.year))}</span><span>${esc(d.label)}</span></button>`).join('')}<p class="ap-note">Choose a date to set the time machine.</p></section>`);
     }
     if (item?.related?.length) {
-      parts.push(`<section class="ap"><h3><span class="key">${key()}</span>Nearby on the globe</h3>${item.related.map((r) => `<button class="ap-row" data-r="item" data-key="${esc(r.key)}"><span>${esc(r.name)}</span><span class="num">${r.km < 1 ? '<1' : Math.round(r.km)} km</span></button>`).join('')}</section>`);
+      parts.push(`<section class="ap"><h3>Nearby on the globe</h3>${item.related.map((r) => `<button class="ap-row" data-r="item" data-key="${esc(r.key)}"><span>${esc(r.name)}</span><span class="num">${r.km < 1 ? '<1' : Math.round(r.km)} km</span></button>`).join('')}</section>`);
     }
     const src = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`;
-    parts.push(`<section class="ap"><h3><span class="key">${key()}</span>Sources</h3>
+    parts.push(`<section class="ap"><h3>Sources</h3>
       <p>Text: <a href="${src}" target="_blank" rel="noopener">“${esc(sum?.title || title)}”</a>, Wikipedia contributors, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. <a href="${src}?action=history" target="_blank" rel="noopener">Authors</a>.</p>
       <p>Images: Wikimedia Commons; select an image for its author and licence.</p>
       ${item?.source ? `<p>${esc(item.source)}</p>` : ''}</section>`);
     return parts.join('');
+  }
+
+  const commonsFile = (url) => decodeURIComponent(url.match(/\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)/)?.[1] || '');
+
+  /** On narrow screens the margin falls below the article, so place and time also sit under the lead. */
+  function inlineApparatus(item, sum) {
+    const c = item?.lat != null ? [item.lat, item.lng] : sum?.coordinates ? [sum.coordinates.lat, sum.coordinates.lon] : null;
+    if (!c && !item?.dates?.length) return '';
+    return `<aside class="rd-inline-ap" aria-label="Place and time">
+      ${c ? `<div class="row"><span class="num">${Math.abs(c[0]).toFixed(2)}° ${c[0] >= 0 ? 'N' : 'S'}, ${Math.abs(c[1]).toFixed(2)}° ${c[1] >= 0 ? 'E' : 'W'}</span><button class="btn" data-r="globe" data-ll="${c[0]},${c[1]}">${icon('crosshair')}Show on globe</button></div>` : ''}
+      ${(item?.dates || []).slice(0, 3).map((d) => `<button class="ap-row" data-r="year" data-year="${d.year}"><span class="num">${esc(fmtYear(d.year))}</span><span>${esc(d.label)}</span></button>`).join('')}
+    </aside>`;
+  }
+
+  /** Put a superscript key at the first mention in the text of each annotated thing; return the letters used. */
+  function anchorKeys(col, item) {
+    if (!item) return {};
+    const scope = [col.querySelector('.rd-standfirst'), col.querySelector('.rd-body')].filter(Boolean);
+    const wants = [];
+    if (item.place) wants.push(['where', item.place.split(',').map((x) => x.trim()).filter((x) => x.length > 2)]);
+    const fig = Object.values(item.figures || {}).map((v) => String(v ?? '').match(/\d[\d,.]*\d/)?.[0]).filter(Boolean);
+    if (fig.length) wants.push(['figures', fig]);
+    if (item.dates?.length) wants.push(['time', item.dates.map((d) => String(Math.abs(d.year)))]);
+    const keys = {};
+    let n = 0;
+    for (const [name, terms] of wants) {
+      const hit = findText(scope, terms);
+      if (!hit) continue;
+      const letter = String.fromCharCode(97 + n++);
+      keys[name] = letter;
+      const { node, end } = hit;
+      const after = node.splitText(end);
+      const sup = document.createElement('sup');
+      sup.className = 'key-ref';
+      sup.innerHTML = `<a href="#ap-${letter}" data-r="key" data-k="${letter}" aria-label="Note ${letter}">${letter}</a>`;
+      after.parentNode.insertBefore(sup, after);
+    }
+    return keys;
+  }
+  function findText(scope, terms) {
+    for (const el of scope) {
+      const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (t) => (t.parentElement.closest('h2,h3,h4,figcaption,table,sup') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+      for (let t = walk.nextNode(); t; t = walk.nextNode()) {
+        for (const term of terms) {
+          const m = new RegExp(`(^|[^\\w])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w])`).exec(t.data);
+          if (m) return { node: t, end: m.index + m[0].length };
+        }
+      }
+    }
+    return null;
   }
 
   async function open(opts, isBack = false) {
@@ -163,12 +214,14 @@ export function createReader(ctx) {
     const { title, item } = opts;
     root.classList.remove('hidden');
     document.body.classList.add('reading');
+    const yr = item?.dates?.length ? fmtYear(item.dates[0].year) : '';
+    const wiki = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`;
     root.innerHTML = `<header class="rd-head">
-        <div class="rd-crumb">${history.length ? `<button class="btn" data-r="back">${icon('chevron-left')}Back</button>` : ''}<span>${esc(item?.kind || 'Article')}</span>${item?.place ? `<span class="sep">·</span><span>${esc(item.place)}</span>` : ''}</div>
-        <div class="rd-tools"><label class="sr-only" for="rd-toc">Contents</label><select id="rd-toc" aria-label="Jump to section"><option>Contents</option></select>
-        ${'speechSynthesis' in window ? `<button class="btn" data-r="listen" aria-pressed="false">${icon('radio')}<span>Listen</span></button>` : ''}
-        <a class="btn" target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}">${icon('external-link')}Wikipedia</a>
-        <button class="btn primary" data-r="close">${icon('globe')}Back to globe</button></div>
+        <div class="rd-crumb">${history.length ? `<button class="btn" data-r="back" aria-label="Back">${icon('chevron-left')}<span class="lbl">Back</span></button>` : ''}<span>${esc(item?.kind || 'Article')}</span>${item?.place ? `<span class="sep">·</span><span class="place">${esc(item.place)}</span>` : ''}${yr ? `<span class="sep">·</span><span class="num">${esc(yr)}</span>` : ''}</div>
+        <div class="rd-tools"><span class="btn rd-toc">${icon('list')}<span class="lbl">Contents</span><select id="rd-toc" aria-label="Contents: jump to section"><option value="">Contents</option></select></span>
+        ${'speechSynthesis' in window ? `<button class="btn" data-r="listen" aria-pressed="false" aria-label="Listen">${icon('radio')}<span class="lbl">Listen</span></button>` : ''}
+        <a class="btn" target="_blank" rel="noopener" href="${wiki}" aria-label="Open on Wikipedia">${icon('external-link')}<span class="lbl">Wikipedia</span></a>
+        <button class="btn primary" data-r="close" aria-label="Back to globe">${icon('globe')}<span class="lbl">Back to globe</span><span class="lbl-short" aria-hidden="true">Globe</span></button></div>
       </header>
       <div class="rd-scroll"><article class="rd-page"><div class="rd-col"><p class="rd-loading">Loading the article…</p></div><aside class="rd-margin" aria-label="Notes">${margin({ item, sum: null, title })}</aside></article></div>`;
     root.querySelector('.rd-scroll').focus?.();
@@ -185,12 +238,13 @@ export function createReader(ctx) {
     col.innerHTML = `<h1>${esc(sum?.title || title)}</h1>
       ${sum?.description ? `<p class="rd-desc">${esc(sum.description)}</p>` : ''}
       ${standfirst ? `<p class="rd-standfirst">${standfirst}</p>` : ''}
-      ${lead ? `<figure class="rd-lead"><img src="${esc(lead.replace(/\/(\d+)px-/, '/960px-'))}" alt="${esc(sum.title)}" data-fallback="${esc(sum?.thumbnail?.source || '')}"></figure>` : ''}
+      ${lead ? `<figure class="rd-lead"><img src="${esc(lead.replace(/\/(\d+)px-/, '/960px-'))}" alt="${esc(sum.title)}" data-fallback="${esc(sum?.thumbnail?.source || '')}">${commonsFile(lead) ? `<figcaption>Wikimedia Commons · <a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(commonsFile(lead))}" target="_blank" rel="noopener">Author and licence</a></figcaption>` : ''}</figure>` : ''}
+      ${inlineApparatus(item, sum)}
       <div class="rd-body">${body}</div>
       <footer class="rd-foot">Text from Wikipedia, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Read the <a href="https://en.wikipedia.org/wiki/${encodeURIComponent((sum?.title || title).replace(/ /g, '_'))}" target="_blank" rel="noopener">full article with references on Wikipedia</a>.</footer>`;
     const leadImg = col.querySelector('.rd-lead img');
     if (leadImg) leadImg.onerror = () => { if (leadImg.dataset.fallback && leadImg.src !== leadImg.dataset.fallback) leadImg.src = leadImg.dataset.fallback; };
-    root.querySelector('.rd-margin').innerHTML = margin({ item, sum, title });
+    root.querySelector('.rd-margin').innerHTML = margin({ item, sum, title, keys: anchorKeys(col, item) });
     const sel = root.querySelector('#rd-toc');
     sel.innerHTML = `<option value="">Contents</option>` + toc.map((t) => `<option value="${t.id}">${t.level === 3 ? '— ' : ''}${esc(t.text)}</option>`).join('');
     sel.onchange = () => { if (sel.value) root.querySelector('#' + CSS.escape(sel.value))?.scrollIntoView({ block: 'start' }); sel.value = ''; };

@@ -29,7 +29,7 @@
     </div>
     <div class="top-controls">
       <label for="basemap" class="sr-only">Map style</label>
-      <select id="basemap">
+      <span class="basemap-wrap"><span class="basemap-ic"><span data-icon="layers"></span></span><select id="basemap">
         <option value="satellite">Satellite</option>
         <option value="bluemarble">Blue Marble</option>
         <option value="topo">Terrain</option>
@@ -39,7 +39,7 @@
         <option value="seasons">Seasons (NASA, by month)</option>
         <option value="blackmarble">Night lights 2016 (NASA)</option>
         <option value="temperature">Land temperature (NASA)</option>
-      </select>
+      </select></span>
       <button id="toggle-nearby" class="chip" aria-pressed="true" title="When zoomed in, show every nearby place that has a Wikipedia article"><span data-icon="book-open"></span><span class="lbl-txt">Nearby</span></button>
       <button id="toggle-borders" class="chip" aria-pressed="true">Borders</button>
       <button id="toggle-labels" class="chip" aria-pressed="true">Labels</button>
