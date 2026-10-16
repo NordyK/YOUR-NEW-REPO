@@ -411,7 +411,9 @@ body.reading #topbar, body.reading #sidebar, body.reading .marker, body.reading 
   .rd-page { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 18px 80px; }
   .rd-margin { position: static; max-height: none; order: 2; border-top: 1px solid var(--line-strong); padding-top: 18px; }
   .rd-inline-ap { display: block; border-block: 1px solid var(--line); padding: 12px 0; margin: 0 0 24px; }
-  .rd-tools .lbl, .rd-crumb .place, .rd-crumb .place + .sep { display: none; }
+  .rd-tools .lbl, .rd-crumb .place, .rd-crumb .place + .sep, .rd-crumb .sep:has(+ .place), .rd-crumb .sub { display: none; }
+  .rd-crumb { flex-wrap: wrap; white-space: normal; row-gap: 0; line-height: 1.35; }
+  .rd-crumb > span { overflow: visible; }
   .rd-tools .lbl-short { display: inline; }
   .rd-tools { gap: 6px; }
   .rd-tools .btn:not(.primary) { width: 44px; padding: 0; justify-content: center; }

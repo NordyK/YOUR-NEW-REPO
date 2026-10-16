@@ -160,6 +160,22 @@ export function createReader(ctx) {
 
   const commonsFile = (url) => decodeURIComponent(url.match(/\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)/)?.[1] || '');
 
+  /** "Photo: author · licence" from the Commons file's metadata; null if unavailable. */
+  async function leadCredit(file) {
+    if (!file) return null;
+    try {
+      const j = await getJSON(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=extmetadata&iiextmetadatafilter=Artist|LicenseShortName&titles=${encodeURIComponent('File:' + file)}`);
+      const m = Object.values(j?.query?.pages || {})[0]?.imageinfo?.[0]?.extmetadata;
+      if (!m) return null;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = m.Artist?.value || '';
+      const artist = tmp.textContent.trim().replace(/\s+/g, ' ').slice(0, 80);
+      const lic = m.LicenseShortName?.value || '';
+      if (!artist && !lic) return null;
+      return `Photo: ${esc(artist || 'Unknown author')}${lic ? ` · ${esc(lic)}` : ''} · <a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(file)}" target="_blank" rel="noopener">Wikimedia Commons</a>`;
+    } catch { return null; }
+  }
+
   /** On narrow screens the margin falls below the article, so place and time also sit under the lead. */
   function inlineApparatus(item, sum) {
     const c = item?.lat != null ? [item.lat, item.lng] : sum?.coordinates ? [sum.coordinates.lat, sum.coordinates.lon] : null;
@@ -217,7 +233,7 @@ export function createReader(ctx) {
     const yr = item?.dates?.length ? fmtYear(item.dates[0].year) : '';
     const wiki = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`;
     root.innerHTML = `<header class="rd-head">
-        <div class="rd-crumb">${history.length ? `<button class="btn" data-r="back" aria-label="Back">${icon('chevron-left')}<span class="lbl">Back</span></button>` : ''}<span>${esc(item?.kind || 'Article')}</span>${item?.place ? `<span class="sep">·</span><span class="place">${esc(item.place)}</span>` : ''}${yr ? `<span class="sep">·</span><span class="num">${esc(yr)}</span>` : ''}</div>
+        <div class="rd-crumb">${history.length ? `<button class="btn" data-r="back" aria-label="Back">${icon('chevron-left')}<span class="lbl">Back</span></button>` : ''}${(item?.kind || 'Article').split(' · ').map((k, i) => `${i ? '<span class="sep sub">·</span>' : ''}<span class="${i ? 'sub' : 'kind'}">${esc(k)}</span>`).join('')}${item?.place ? `<span class="sep">·</span><span class="place">${esc(item.place)}</span>` : ''}${yr ? `<span class="sep">·</span><span class="num">${esc(yr)}</span>` : ''}</div>
         <div class="rd-tools"><span class="btn rd-toc">${icon('list')}<span class="lbl">Contents</span><select id="rd-toc" aria-label="Contents: jump to section"><option value="">Contents</option></select></span>
         ${'speechSynthesis' in window ? `<button class="btn" data-r="listen" aria-pressed="false" aria-label="Listen">${icon('radio')}<span class="lbl">Listen</span></button>` : ''}
         <a class="btn" target="_blank" rel="noopener" href="${wiki}" aria-label="Open on Wikipedia">${icon('external-link')}<span class="lbl">Wikipedia</span></a>
@@ -242,6 +258,8 @@ export function createReader(ctx) {
       ${inlineApparatus(item, sum)}
       <div class="rd-body">${body}</div>
       <footer class="rd-foot">Text from Wikipedia, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Read the <a href="https://en.wikipedia.org/wiki/${encodeURIComponent((sum?.title || title).replace(/ /g, '_'))}" target="_blank" rel="noopener">full article with references on Wikipedia</a>.</footer>`;
+    const leadCap = col.querySelector('.rd-lead figcaption');
+    if (leadCap) leadCredit(commonsFile(lead)).then((c) => { if (c && current === opts) leadCap.innerHTML = c; });
     const leadImg = col.querySelector('.rd-lead img');
     if (leadImg) leadImg.onerror = () => { if (leadImg.dataset.fallback && leadImg.src !== leadImg.dataset.fallback) leadImg.src = leadImg.dataset.fallback; };
     root.querySelector('.rd-margin').innerHTML = margin({ item, sum, title, keys: anchorKeys(col, item) });
