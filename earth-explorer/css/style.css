@@ -310,7 +310,6 @@ body.far .marker.small .dot .ic, body.far .marker .dot b { display: none; }
   #sidebar.panel-closed { width: calc(100vw - 20px); }
   .rail { width: auto; flex-direction: row; border-right: 0; border-bottom: 1px solid var(--line); overflow-x: auto; padding: 6px; }
   .rail-btn { min-width: 64px; }
-  #legend { left: 10px; }
   #info { top: auto; height: 64vh; z-index: 22; }
   #legend { left: 10px; max-width: 62vw; }
   .tl-jumps, #tl-era { display: none; }
@@ -364,7 +363,7 @@ body.reading #topbar, body.reading #sidebar, body.reading .marker, body.reading 
 .rd-body h4 { font-size: 16px; margin: 1.4em 0 0.3em; }
 .rd-body p { margin: 0 0 1.05em; }
 .rd-col a { color: inherit; text-decoration: underline; text-decoration-color: rgba(240, 181, 74, 0.28); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.rd-col a:hover { color: #f5c873; text-decoration-color: currentColor; }
+.rd-col a:hover { color: #f6c66b; text-decoration-color: currentColor; }
 .rd-body ul, .rd-body ol { padding-left: 1.3em; margin: 0 0 1.1em; }
 .rd-body li { margin: 0.25em 0; }
 .rd-body li::marker { color: var(--brass); }
@@ -390,7 +389,7 @@ body.reading #topbar, body.reading #sidebar, body.reading .marker, body.reading 
 .rd-body math, .rd-body .mwe-math-element { font-size: 15px; }
 .rd-foot { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--text-3); }
 .rd-loading, .rd-error { color: var(--text-2); }
-.rd-margin { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; font-size: 13px; color: var(--text-2); }
+.rd-margin { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; font-size: 12.5px; color: var(--text-2); }
 .rd-margin .ap { padding: 12px 0 14px; border-top: 1px solid var(--line); }
 .rd-margin .ap:first-child { border-top: 0; padding-top: 0; }
 .rd-margin h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); }
