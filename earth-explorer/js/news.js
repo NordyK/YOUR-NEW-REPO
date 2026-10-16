@@ -15,7 +15,7 @@ const SKIP_LINK = /^(\d{1,4}( BC)?|\d{1,4}s( BC)?|(January|February|March|April|
 export function createNews(ctx) {
   const { esc, getJSON, fmtYear } = ctx;
   const pageCache = new Map(), coordCache = new Map();
-  const st = { mode: 'day', country: '', items: [], status: '', source: null, loadedFor: '', date: null };
+  const st = { mode: 'day', country: '', items: [], status: '', source: null, loadedFor: '', date: null, paperDate: null, paperQ: '' };
 
   const enc = (t) => encodeURIComponent(t.replace(/ /g, '_'));
   async function page(title) {
@@ -169,13 +169,27 @@ export function createNews(ctx) {
 
   async function load() {
     const year = ctx.state.year;
-    const key = `${st.mode}|${st.mode === 'day' ? st.date : year}|${st.country}`;
+    const key = `${st.mode}|${st.mode === 'day' ? st.date : st.mode === 'papers' ? st.paperDate + '|' + st.paperQ : year}|${st.country}`;
     if (st.loadedFor === key) return;
     st.loadedFor = key;
     st.items = []; st.status = 'loading'; st.source = null;
     ctx.refresh();
     try {
-      if (st.mode === 'day') {
+      if (st.mode === 'papers') {
+        // Library of Congress, Chronicling America: digitised US newspaper pages, 1770–1963
+        const d = st.paperDate;
+        const j = await getJSON(`https://www.loc.gov/collections/chronicling-america/?fo=json&dates=${d}/${d}&c=80&at=results${st.paperQ ? '&q=' + encodeURIComponent(st.paperQ) : ''}`);
+        if (st.loadedFor !== key) return;
+        if (!j) throw new Error('busy');
+        const title = (t) => t.replace(/\b\w/g, (c) => c.toUpperCase());
+        st.items = (j.results || []).filter((x) => x.date === d && x.image_url?.length).map((x) => ({
+          kind: 'paper', date: d, paper: x.title.replace(/,\s*[A-Z][a-z]+ \d{1,2}, \d{4}$/, ''),
+          city: title(x.location_city?.[0] || ''), state: title(x.location_state?.[0] || ''),
+          thumb: x.image_url[0].split('#')[0], big: x.image_url[0].split('#')[0].replace(/pct:[\d.]+/, 'pct:25'), url: x.url,
+          text: esc(x.title), titles: x.location_city?.[0] && x.location_state?.[0] ? [`${title(x.location_city[0])}, ${title(x.location_state[0])}`] : [],
+        }));
+        st.source = { title: 'Chronicling America', url: `https://www.loc.gov/collections/chronicling-america/?dates=${d}/${d}`, label: 'Library of Congress, Chronicling America' };
+      } else if (st.mode === 'day') {
         const d = new Date(st.date + 'T12:00:00Z');
         const title = `Portal:Current events/${isoDay(d).replace(/_/g, ' ')}`;
         const p = await page(title);
@@ -223,22 +237,29 @@ export function createNews(ctx) {
     const y = ctx.state.year;
     if (!st.date || (st.mode === 'day' && !st.date.startsWith(String(Math.max(2002, Math.min(2026, y)))))) st.date = defaultDate();
     if (st.mode === 'day' && y < 2002) st.mode = 'year';
+    if (st.mode === 'papers' && (y < 1770 || y > 1963)) st.mode = 'year';
+    if (!st.paperDate || +st.paperDate.slice(0, 4) !== y) st.paperDate = y >= 1770 && y <= 1963 ? `${y}-04-16` : null;
     const countries = ctx.countryNames();
     el.innerHTML = `<div class="side-head"><h2>News</h2></div>
       <p class="side-desc">Real reporting for the year on the timeline: daily news citing its outlets (2002 onwards), the chronicle of any year back to the Ice Age, and chronicles of single countries.</p>
       <div class="seg" role="tablist" aria-label="News source">
         <button role="tab" aria-selected="${st.mode === 'day'}" data-nm="day" ${y < 2002 ? 'disabled title="Daily news starts in 2002. Move the timeline later."' : ''}>${icon('newspaper')}Day by day</button>
-        <button role="tab" aria-selected="${st.mode === 'year'}" data-nm="year">${icon('calendar-days')}Year chronicle</button>
+        <button role="tab" aria-selected="${st.mode === 'year'}" data-nm="year">${icon('calendar-days')}Chronicle</button>
+        <button role="tab" aria-selected="${st.mode === 'papers'}" data-nm="papers" ${y < 1770 || y > 1963 ? 'disabled title="Digitised newspapers cover 1770–1963. Move the timeline into that range."' : ''}>${icon('scroll')}Newspapers</button>
       </div>
-      ${st.mode === 'day' ? `<label class="field">Date <input type="date" data-nd value="${esc(st.date || '')}" min="2002-01-01" max="${new Date().toISOString().slice(0, 10)}"></label>`
+      ${st.mode === 'papers' ? `<label class="field">Date <input type="date" data-pd value="${esc(st.paperDate || '')}" min="1770-01-01" max="1963-12-31"></label><label class="field">Words on the page (optional) <input type="search" data-pq value="${esc(st.paperQ)}" placeholder="e.g. Titanic, election, earthquake"></label>`
+        : st.mode === 'day' ? `<label class="field">Date <input type="date" data-nd value="${esc(st.date || '')}" min="2002-01-01" max="${new Date().toISOString().slice(0, 10)}"></label>`
         : `<label class="field">Place <select data-nc><option value="">The whole world</option>${countries.map((c) => `<option ${c === st.country ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label>`}
-      <div class="news-head"><b>${st.mode === 'day' ? esc(st.date ? new Date(st.date + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : '') : esc(st.country ? `${fmtYear(y)} in ${st.country}` : `The world in ${fmtYear(y)}`)}</b>
+      <div class="news-head"><b>${st.mode === 'papers' ? `US newspapers of ${esc(st.paperDate ? new Date(st.paperDate + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : '')}` : st.mode === 'day' ? esc(st.date ? new Date(st.date + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : '') : esc(st.country ? `${fmtYear(y)} in ${st.country}` : `The world in ${fmtYear(y)}`)}</b>
         ${st.items.length ? `<span class="muted">${st.items.length} items · ${st.locating ? 'placing them on the globe…' : `${st.items.filter((e) => e.lat != null).length} on the globe`}</span>` : ''}</div>
       <div class="news-list">${body()}</div>
-      ${st.source ? `<p class="muted small news-src">Source: <a href="${esc(st.source.url)}" target="_blank" rel="noopener">${esc(st.source.label || st.source.title)}</a>, CC BY-SA 4.0. ${st.mode === 'day' ? 'Each item links to the news outlets it cites.' : 'Items summarise events documented on Wikipedia.'}</p>` : ''}`;
+      ${st.source ? `<p class="muted small news-src">Source: <a href="${esc(st.source.url)}" target="_blank" rel="noopener">${esc(st.source.label || st.source.title)}</a>${st.mode === 'papers' ? '.' : ', CC BY-SA 4.0.'} ${st.mode === 'papers' ? 'Page scans and text from the Library of Congress; no known copyright restrictions.' : st.mode === 'day' ? 'Each item links to the news outlets it cites.' : 'Items summarise events documented on Wikipedia.'}</p>` : ''}`;
     el.querySelectorAll('[data-nm]').forEach((b) => (b.onclick = () => { st.mode = b.dataset.nm; st.loadedFor = ''; renderPanel(el); load(); }));
     el.querySelector('[data-nd]')?.addEventListener('change', (e) => { st.date = e.target.value; const yy = +st.date.slice(0, 4); if (yy !== ctx.state.year) ctx.setYear(yy, true); load(); });
     el.querySelector('[data-nc]')?.addEventListener('change', (e) => { st.country = e.target.value; load(); });
+    el.querySelector('[data-pd]')?.addEventListener('change', (e) => { st.paperDate = e.target.value; load(); });
+    el.querySelector('[data-pq]')?.addEventListener('change', (e) => { st.paperQ = e.target.value.trim(); load(); });
+    el.querySelectorAll('[data-paper]').forEach((b) => (b.onclick = () => ctx.showPaper(st.items, +b.dataset.paper)));
     el.querySelector('[data-nretry]')?.addEventListener('click', () => { st.loadedFor = ''; load(); });
     el.querySelectorAll('[data-ni]').forEach((b) => (b.onclick = (ev) => { if (ev.target.closest('a')) return; ctx.showNewsItem(st.items[+b.dataset.ni]); }));
     el.querySelectorAll('.news-list a[data-wiki]').forEach((a) => (a.onclick = (ev) => { ev.preventDefault(); ctx.openArticle(a.dataset.wiki); }));
@@ -246,7 +267,8 @@ export function createNews(ctx) {
   function body() {
     if (st.status === 'loading') return `<p class="muted">Gathering the news…</p>`;
     if (st.status === 'error') return `<p class="muted">Wikipedia is busy or unreachable right now. <button class="btn" data-nretry>${icon('refresh-cw')}Try again</button></p>`;
-    if (st.status === 'empty') return `<p class="muted">No chronicle was found for this ${st.mode === 'day' ? 'day' : st.country ? 'country and year' : 'year'}.${st.source ? ` <a href="${esc(st.source.url)}" target="_blank" rel="noopener">Look on Wikipedia</a>.` : ''}</p>`;
+    if (st.status === 'empty') return `<p class="muted">${st.mode === 'papers' ? 'No digitised newspaper pages were found for this date. Try a nearby day or remove the search words.' : `No chronicle was found for this ${st.mode === 'day' ? 'day' : st.country ? 'country and year' : 'year'}.`}${st.source ? ` <a href="${esc(st.source.url)}" target="_blank" rel="noopener">Look on Wikipedia</a>.` : ''}</p>`;
+    if (st.mode === 'papers') return `<div class="papers">${st.items.map((e, i) => `<button class="paper" data-paper="${i}"><img src="${esc(e.thumb)}" alt="Front page of ${esc(e.paper)}" loading="lazy"><span><b>${esc(e.paper)}</b><small>${esc([e.city, e.state].filter(Boolean).join(', '))}</small></span></button>`).join('')}</div>`;
     let lastCat = null;
     return st.items.map((e, i) => {
       const head = st.mode === 'day' && e.category !== lastCat ? `<h3 class="news-cat">${esc(e.category || 'News')}</h3>` : '';

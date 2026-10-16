@@ -162,20 +162,31 @@ const BASEMAPS = {
   bluemarble: { img: TEX + 'earth-blue-marble.jpg', bump: TEX + 'earth-topology.png', credit: 'NASA Blue Marble' },
   night: { img: TEX + 'earth-night.jpg', bump: TEX + 'earth-topology.png', credit: 'NASA Earth at Night' },
   gibs: { dynamic: true, credit: 'Imagery: NASA GIBS / Worldview, MODIS Terra' },
+  blackmarble: { tiles: (x, y, l) => `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/${l}/${y}/${x}.png`, max: 8, credit: 'NASA Black Marble 2016 (VIIRS night lights)' },
+  seasons: { dynamic: 'seasons', max: 8, credit: 'NASA Blue Marble Next Generation, 2004' },
+  temperature: { dynamic: 'lst', max: 7, credit: 'NASA MODIS Terra land surface temperature (day)' },
 };
 function setBasemap(key) {
   if (!BASEMAPS[key]) key = 'satellite';
   state.basemap = key;
   let b = BASEMAPS[key];
-  if (b.dynamic) {
+  if (b.dynamic === 'seasons') {
+    const mm = String(state.month || new Date().getMonth() + 1).padStart(2, '0');
+    b = { ...b, tiles: (x, y, l) => `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/2004-${mm}-01/GoogleMapsCompatible_Level8/${l}/${y}/${x}.jpeg`, credit: `${b.credit}, ${['January','February','March','April','May','June','July','August','September','October','November','December'][+mm - 1]}` };
+  } else if (b.dynamic === 'lst') {
+    const date = state.year >= 2001 && state.year < 2026 ? `${state.year}-07-15` : new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10);
+    b = { ...b, tiles: (x, y, l) => `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Land_Surface_Temp_Day/default/${date}/GoogleMapsCompatible_Level7/${l}/${y}/${x}.png`, credit: `${b.credit}, ${date}` };
+  } else if (b.dynamic) {
     const date = live?.gibsDateFor(state.year);
     if (!date) { toast('NASA daily imagery starts in February 2000. Showing the satellite mosaic instead.'); return setBasemap('satellite'); }
     b = { ...b, tiles: gibsTiles(date), credit: `${b.credit}, ${date}` };
     state.gibsDate = date;
   }
-  globe.globeTileEngineMaxLevel(key === 'gibs' ? 9 : 19);
+  globe.globeTileEngineMaxLevel(key === 'gibs' ? 9 : b.max || 19);
   if (b.tiles) globe.globeImageUrl(null).bumpImageUrl(null).globeTileEngineUrl(b.tiles);
   else globe.globeTileEngineUrl(null).globeImageUrl(b.img).bumpImageUrl(b.bump || null);
+  // The tile engine only fetches on camera change, so nudge it after swapping sources.
+  [80, 700].forEach((t) => setTimeout(() => globe.controls().dispatchEvent({ type: 'change' }), t));
   $('#attribution').textContent = `${b.credit} · Data: Natural Earth, Wikipedia, NOAA, NASA`;
   $('#basemap').value = key;
   writeHash();
@@ -429,7 +440,12 @@ function buildMarkers() {
     (a?.hotspots || []).forEach((h, i) => m.push({ key: `a:${id}:${i}`, lat: h.lat, lng: h.lng, icon: 'paw-print', label: `${a.name} · ${h.name}`, color: a.color, small: true, open: () => showAnimal(id, h) }));
   });
   if (state.tab === 'news' && news) {
-    news.pins().slice(0, 150).forEach((e, i) => m.push({ key: 'n:' + (e.lat.toFixed(3) + e.lng.toFixed(3) + i), lat: e.lat, lng: e.lng, icon: 'newspaper', label: e.text.replace(/<[^>]+>/g, '').slice(0, 80), color: '#e9e3d2', small: true, cls: 'news', open: () => showNewsItem(e) }));
+    news.pins().slice(0, 150).forEach((e, i) => m.push({ key: 'n:' + (e.lat.toFixed(3) + e.lng.toFixed(3) + i), lat: e.lat, lng: e.lng, icon: 'newspaper', label: (e.paper || e.text.replace(/<[^>]+>/g, '')).slice(0, 80), color: '#e9e3d2', small: true, cls: 'news', open: () => (e.kind === 'paper' ? news.state.items.indexOf(e) >= 0 && openPaper(e) : showNewsItem(e)) }));
+  }
+  if (live) {
+    const L = live.layers();
+    L.eonet.forEach((e) => m.push({ key: 'eo:' + e.id, lat: e.lat, lng: e.lng, icon: e.icon, label: e.title, color: '#ff8a7a', small: true, open: () => showEonet(e) }));
+    if (L.iss) m.push({ key: 'iss', lat: L.iss.lat, lng: L.iss.lng, icon: 'rocket', label: `ISS · ${Math.round(L.iss.alt)} km up`, color: '#9db1ff', open: () => showIss(L.iss) });
   }
   if (state.nearby && state.altitude < NEARBY_ALT) {
     nearbyVisible().forEach((p) => m.push({ key: 'p:' + p.pageid, lat: p.lat, lng: p.lng, icon: 'book-open', label: p.title, color: C_WIKI, cls: 'wiki', open: () => showWikiPlace(p) }));
@@ -642,7 +658,7 @@ function lbShow(i) {
   img.onerror = () => { if (img.src !== p.fallback) img.src = p.fallback; };
   img.src = p.full;
   img.alt = p.caption ? `${lbName}: ${p.caption}` : `Photo of ${lbName}`;
-  $('.lb-bar', lb).innerHTML = `<span>${esc(lbName)}${p.caption ? ' · ' + esc(p.caption.slice(0, 200)) : ''}</span><span>${lbIdx + 1} / ${lbList.length}</span>${p.file ? `<a href="https://commons.wikimedia.org/wiki/${wikiTitle(p.file)}" target="_blank" rel="noopener">Author &amp; licence on Wikimedia Commons</a>` : ''}`;
+  $('.lb-bar', lb).innerHTML = `<span>${esc(lbName)}${p.caption ? ' · ' + esc(p.caption.slice(0, 200)) : ''}</span><span>${lbIdx + 1} / ${lbList.length}</span>${p.file ? `<a href="https://commons.wikimedia.org/wiki/${wikiTitle(p.file)}" target="_blank" rel="noopener">Author &amp; licence on Wikimedia Commons</a>` : ''}${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.linkText || 'Source')}</a>` : ''}`;
   $$('.lb-nav', lb).forEach((b) => b.classList.toggle('hidden', lbList.length < 2));
 }
 function openLightbox(list, i, name) {
@@ -682,6 +698,42 @@ const factList = (f, title = 'Did you know?') => (f?.length ? `<h3>${title}</h3>
 const meta = (iconName, color, parts) => `<div class="meta" style="--c:${color}">${icon(iconName)}${parts.filter(Boolean).map((p, i) => (i ? '<span class="sep">·</span>' : '') + `<span>${p}</span>`).join('')}</div>`;
 const wikiLink = (title) => (title ? `<a class="btn" href="https://en.wikipedia.org/wiki/${wikiTitle(title)}" target="_blank" rel="noopener">${icon('book-open')}Read on Wikipedia</a>` : '');
 const closeupBtns = (lat, lng) => `<button class="btn primary" data-closeup="${lat},${lng}">${icon('satellite')}Satellite close-up</button><button class="btn" data-fly="${lat},${lng},0.35">${icon('crosshair')}Fly here</button>`;
+const hereBtn = (lat, lng, km, name) => `<button class="btn" data-here="${lat},${lng},${km}" data-here-name="${esc(name)}">${icon('hourglass')}What happened here?</button>`;
+const hereCache = new Map();
+/** "What happened here?": dated events, foundings and constructions near a point, from Wikidata. */
+async function showHere(lat, lng, km, name) {
+  const key = `${lat.toFixed(3)},${lng.toFixed(3)},${km}`;
+  openInfo(`<div class="info-main"><h2>What happened here?</h2>${meta('hourglass', '#e2a2f2', [esc(name), `within ${km} km`])}<p class="muted">Searching Wikidata for dated events and places around ${esc(name)}. This can take up to half a minute…</p></div>`, null);
+  if (!hereCache.has(key)) {
+    const q = `SELECT ?e ?eLabel ?eDescription ?date ?k ?article ?links ?c WHERE {
+      SERVICE wikibase:around { ?e wdt:P625 ?c . bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral . bd:serviceParam wikibase:radius "${km}" . }
+      { ?e wdt:P585 ?date BIND("event" AS ?k) } UNION { ?e wdt:P580 ?date BIND("began" AS ?k) } UNION { ?e wdt:P571 ?date BIND("founded" AS ?k) }
+      ?article schema:about ?e ; schema:isPartOf <https://en.wikipedia.org/> .
+      ?e wikibase:sitelinks ?links .
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    } ORDER BY DESC(?links) LIMIT 160`;
+    hereCache.set(key, getJSON(`https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(q)}`, 2).then((j) => {
+      if (!j) { hereCache.delete(key); return null; }
+      const seen = new Set();
+      return (j.results?.bindings || []).map((b) => {
+        const raw = parseInt(b.date.value, 10); // astronomical numbering: 0 = 1 BC, -43 = 44 BC
+        const year = raw <= 0 ? raw - 1 : raw;
+        const pt = /Point\(([-\d.]+) ([-\d.]+)\)/.exec(b.c?.value || '');
+        return { name: b.eLabel.value, desc: b.eDescription?.value || '', year, kind: b.k.value, title: decodeURIComponent(b.article.value.split('/wiki/')[1]).replace(/_/g, ' '), lat: pt ? +pt[2] : null, lng: pt ? +pt[1] : null };
+      }).filter((x) => !isNaN(x.year) && !seen.has(x.name + x.year) && seen.add(x.name + x.year)).sort((a, b) => a.year - b.year);
+    }));
+  }
+  const rows = await hereCache.get(key);
+  if (!info.querySelector('.info-main h2')?.textContent.startsWith('What happened here')) return; // the learner moved on
+  if (!rows) { openInfo(`<div class="info-main"><h2>What happened here?</h2><p class="muted">Wikidata did not answer in time. <button class="btn" data-here="${lat},${lng},${km}" data-here-name="${esc(name)}">${icon('refresh-cw')}Try again</button></p></div>`, null); return; }
+  const era = (y) => (y < -3000 ? 'Prehistory' : y < 500 ? 'Antiquity' : y < 1500 ? 'Middle Ages' : y < 1800 ? 'Early modern' : y < 1945 ? '1800–1945' : 'Since 1945');
+  let last = '';
+  openInfo(`<div class="info-main"><h2>What happened here?</h2>
+    ${meta('hourglass', '#e2a2f2', [esc(name), `within ${km} km`, `${rows.length} dated records`])}
+    <p class="muted small">Events, foundings and constructions with a date and a location in Wikidata, the most widely documented first. Choose a year to travel there, or a name to read about it.</p>
+    ${rows.map((r) => { const head = era(r.year) !== last ? `<h3>${(last = era(r.year))}</h3>` : ''; return `${head}<div class="here-row"><button class="here-year num" data-year="${r.year}">${esc(fmtYear(r.year))}</button><div><button class="here-name" data-read="" data-title="${esc(r.title)}">${esc(r.name)}</button><small>${r.kind === 'founded' ? 'Founded or built' : r.kind === 'began' ? 'Began' : 'Event'}${r.desc ? ' · ' + esc(r.desc) : ''}</small></div></div>`; }).join('') || '<p class="muted">No dated records found nearby. Try a larger area.</p>'}
+    <p class="muted small">Data: Wikidata (CC0).</p></div>`, null);
+}
 const readBtn = (key, title) => (title ? `<button class="btn" data-read="${esc(key)}" data-title="${esc(String(title).replace(/_/g, ' '))}">${icon('book-open')}Read full article</button>` : '');
 const kmBetween = (a, b) => { const R = 6371, dLat = ((b.lat - a.lat) * Math.PI) / 180, dLng = ((b.lng - a.lng) * Math.PI) / 180; const s = Math.sin(dLat / 2) ** 2 + Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); };
 function relatedTo(pt, selfKey, limit = 6) {
@@ -722,6 +774,7 @@ function bindActions() {
   $$('[data-site]', infoBody).forEach((b) => (b.onclick = () => { const [rid, i] = b.dataset.site.split('|'); showSite(RESOURCE[rid], RESOURCE[rid].sites[+i]); }));
   $$('[data-item]', infoBody).forEach((b) => (b.onclick = () => openByKey(b.dataset.item)));
   $$('[data-res]', infoBody).forEach((b) => (b.onclick = () => { toggleResource(b.dataset.res, true); showResource(b.dataset.res, false); }));
+  $$('[data-here]', infoBody).forEach((b) => (b.onclick = () => { const [la, lo, km] = b.dataset.here.split(',').map(Number); showHere(la, lo, km, b.dataset.hereName); }));
   $$('[data-read]', infoBody).forEach((b) => (b.onclick = () => reader.open({ title: b.dataset.title, item: itemFor(b.dataset.read) })));
   $$('[data-remove-animal]', infoBody).forEach((b) => (b.onclick = () => { toggleAnimal(b.dataset.removeAnimal, false); closeInfo(); }));
 }
@@ -735,7 +788,7 @@ function showWonder(w) {
     <p class="summary">${esc(w.summary)}</p>
     ${figures({ ...(w.stats || {}), Formed: formed, 'UNESCO World Heritage': w.unesco || null })}
     ${factList(w.facts)}${wikiExtract(w.wiki)}
-    <div class="actions">${readBtn('w:' + w.id, w.wiki)}${closeupBtns(w.lat, w.lng)}${wikiLink(w.wiki)}</div></div>`, 'w:' + w.id);
+    <div class="actions">${readBtn('w:' + w.id, w.wiki)}${closeupBtns(w.lat, w.lng)}${hereBtn(w.lat, w.lng, 40, w.name)}${wikiLink(w.wiki)}</div></div>`, 'w:' + w.id);
 }
 function showLandmark(l) {
   flyTo(l.lat, l.lng, 0.6);
@@ -748,7 +801,7 @@ function showLandmark(l) {
     <p class="summary">${esc(l.summary)}</p>
     ${figures({ Completed: l.built != null ? fmtYear(l.built) : null, Destroyed: l.destroyed != null ? fmtYear(l.destroyed) : null, 'Built by': l.builder, Height: l.height, ...(l.stats || {}) })}
     ${factList(l.facts)}${wikiExtract(l.wiki)}
-    <div class="actions">${readBtn('l:' + l.id, l.wiki)}${closeupBtns(l.lat, l.lng)}${wikiLink(l.wiki)}</div></div>`, 'l:' + l.id);
+    <div class="actions">${readBtn('l:' + l.id, l.wiki)}${closeupBtns(l.lat, l.lng)}${hereBtn(l.lat, l.lng, 8, l.name)}${wikiLink(l.wiki)}</div></div>`, 'l:' + l.id);
 }
 function showEvent(e) {
   flyTo(e.lat, e.lng, 0.9);
@@ -822,7 +875,7 @@ function showCountry(c) {
     ${res.length ? `<h3>Major producer of</h3>${res.map(({ r, pp }) => `<button class="row-btn" data-res="${r.id}"><span class="rb-name">${esc(r.name)}</span><span class="rb-val">${pp.share}% of world</span>${pp.value ? `<small>${esc(pp.value)}</small>` : ''}</button>`).join('')}` : ''}
     ${ws.length ? `<h3>Natural wonders</h3>${ws.map((w) => `<button class="row-btn" data-item="w:${w.id}"><span class="rb-name">${esc(w.name)}</span><span class="rb-val">${esc(w.type)}</span></button>`).join('')}` : ''}
     ${ls.length ? `<h3>Landmarks</h3>${ls.map((l) => `<button class="row-btn" data-item="l:${l.id}"><span class="rb-name">${esc(l.name)}</span><span class="rb-val num">${esc(fmtYear(l.built))}</span></button>`).join('')}` : ''}
-    ${wikiExtract(title)}<div class="actions">${readBtn('c:' + c.iso3, title)}${wikiLink(title)}</div></div>`, 'c:' + c.iso3);
+    ${wikiExtract(title)}<div class="actions">${readBtn('c:' + c.iso3, title)}${(() => { const ce = countryCenter(c); return ce ? hereBtn(+ce.lat.toFixed(3), +ce.lng.toFixed(3), Math.round(Math.min(400, Math.max(60, ce.span * 25))), c.longName) : ''; })()}${wikiLink(title)}</div></div>`, 'c:' + c.iso3);
   countries.mountIndicators(document.getElementById('c-charts'), [c.iso3], [c.longName]);
 }
 function showPolity(d) {
@@ -838,7 +891,7 @@ function showWikiPlace(p) {
     <h2>${esc(p.title)}</h2>
     ${meta('book-open', C_WIKI, ['Nearby place on Wikipedia', coords(p.lat, p.lng)])}
     ${wikiExtract(p.title)}
-    <div class="actions">${readBtn('p:' + p.pageid, p.title)}${closeupBtns(p.lat, p.lng)}${wikiLink(p.title)}</div></div>`, 'p:' + p.pageid);
+    <div class="actions">${readBtn('p:' + p.pageid, p.title)}${closeupBtns(p.lat, p.lng)}${hereBtn(p.lat, p.lng, 3, p.title)}${wikiLink(p.title)}</div></div>`, 'p:' + p.pageid);
 }
 function showAnimal(id, hotspot) {
   const a = ANIMAL[id];
@@ -1075,6 +1128,10 @@ function pickSearch(key) { closeSearch(); sInput.value = ''; sInput.blur(); open
 
 // ============================================================ timeline
 const slider = $('#tl-slider');
+function renderMarks() {
+  // one hairline per year that has a historical border map (positions follow the slider's non-linear scale)
+  $('#tl-marks').innerHTML = [...HIST_MAPS, 2011].filter((y) => y >= -20000).map((y) => `<i style="left:${yearToPos(y) / 10}%"></i>`).join('');
+}
 function renderTicks() {
   const ticks = window.innerWidth < 760 ? [-20000, -5000, 1, 1500, 1900, NOW] : [-20000, -10000, -5000, -3000, -1000, 1, 500, 1000, 1500, 1800, 1900, 1950, 2000, NOW];
   $('#tl-ticks').innerHTML = ticks.map((y) => `<span style="left:${yearToPos(y) / 10}%">${y === NOW ? 'Now' : y < 0 ? (-y >= 1000 ? -y / 1000 + 'k BC' : -y + ' BC') : y === 1 ? 'AD 1' : y}</span>`).join('');
@@ -1237,6 +1294,7 @@ PANELS.countries = { render: (el) => countries.renderPanel(el) };
 countries.ready.then(() => { if (state.tab === 'countries') renderSide(); });
 
 // ============================================================ news
+const openPaper = (e) => { const items = news.state.items; const i = items.indexOf(e); openLightbox(items.map((x) => ({ full: x.big, fallback: x.thumb, caption: `${x.paper}, ${x.city ? x.city + ', ' : ''}${x.state}`, link: x.url, linkText: 'Read this page at the Library of Congress' })), i, 'Front page'); };
 const NEWS_COUNTRY = { 'United States of America': 'United States', 'Dem. Rep. Congo': 'Democratic Republic of the Congo', 'Central African Rep.': 'Central African Republic', 'S. Sudan': 'South Sudan', 'Bosnia and Herz.': 'Bosnia and Herzegovina', 'Dominican Rep.': 'Dominican Republic', 'Eq. Guinea': 'Equatorial Guinea', 'Solomon Is.': 'Solomon Islands', "Côte d'Ivoire": 'Ivory Coast', Czechia: 'Czech Republic', 'Republic of the Congo': 'Republic of the Congo' };
 function showNewsItem(e) {
   if (!e) return;
@@ -1256,6 +1314,11 @@ news = createNews({
   refresh: () => { if (state.tab === 'news') renderSide(); refreshMarkers(); },
   countryNames: () => [...new Set(COUNTRIES.map((c) => NEWS_COUNTRY[c.name] || c.name))].sort(),
   showNewsItem: (e) => showNewsItem(e),
+  showPaper: (items, i) => {
+    const e = items[i];
+    if (e.lat != null) flyTo(e.lat, e.lng, 0.9);
+    openLightbox(items.map((x) => ({ full: x.big, fallback: x.thumb, caption: `${x.paper}, ${x.city ? x.city + ', ' : ''}${x.state}`, link: x.url, linkText: 'Read this page at the Library of Congress' })), i, 'Front page');
+  },
   openArticle: (t) => reader.open({ title: t }),
 });
 PANELS.news = { render: (el) => news.renderPanel(el), enter: () => { news.load(); refreshMarkers(); }, leave: () => refreshMarkers() };
@@ -1284,12 +1347,70 @@ const learn = createLearn({
 PANELS.learn = { render: (el) => learn.renderPanel(el) };
 
 // ============================================================ live earth
-live = createLive({ THREE, globe, esc, state, getJSON, fly, openLightbox, setBasemap: (k) => { setBasemap(k); renderSide(); }, refresh: () => { if (state.tab === 'live') renderSide(); } });
+live = createLive({ THREE, globe, esc, state, getJSON, fly, openLightbox, nightTexture: TEX + 'earth-night.jpg', layersChanged: () => { refreshMarkers(); refreshQuakes(); }, setBasemap: (k) => { setBasemap(k); renderSide(); }, refresh: () => { if (state.tab === 'live') renderSide(); } });
 PANELS.live = { render: (el) => live.renderPanel(el), enter: () => live.loadEpic() };
 reloadLive = debounce(() => {
   if (state.basemap === 'gibs') { const d = live.gibsDateFor(state.year); if (!d) setBasemap('satellite'); else if (d !== state.gibsDate) setBasemap('gibs'); }
   if (state.tab === 'live') { live.loadEpic(); renderSide(); }
 }, 700);
+
+// live layer helpers: earthquakes as columns (height = magnitude, colour = depth), EONET and ISS cards
+function refreshQuakes() {
+  const q = live ? live.layers().quakes : [];
+  globe.pointsData(q).pointLat('lat').pointLng('lng').pointAltitude((d) => Math.max(0.005, (d.mag - 2) * 0.025)).pointRadius((d) => 0.18 + d.mag * 0.06)
+    .pointColor((d) => (d.depth < 70 ? '#ff9f43' : d.depth < 300 ? '#e8b04b' : '#c9a0ff')).pointResolution(8).pointsMerge(false)
+    .pointLabel((d) => `<b>M${d.mag.toFixed(1)}</b> ${esc(d.place || '')}<br><span style="opacity:.75">${new Date(d.time).toUTCString().slice(5, 22)} UTC · ${Math.round(d.depth)} km deep</span>`)
+    .onPointClick((d) => showQuake(d));
+}
+function showQuake(d) {
+  flyTo(d.lat, d.lng, 0.8);
+  openInfo(`<div class="info-main"><h2>Magnitude ${d.mag.toFixed(1)} earthquake</h2>
+    ${meta('activity', '#ff9f43', [esc(d.place || ''), `<span class="num">${esc(new Date(d.time).toUTCString().slice(5, 22))} UTC</span>`])}
+    ${figures({ Magnitude: d.mag.toFixed(1), Depth: Math.round(d.depth) + ' km', Location: `${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°` })}
+    <p class="muted small">Shallow earthquakes (orange, under 70 km) are usually felt most strongly. Data: USGS Earthquake Hazards Program, public domain.</p>
+    <div class="actions"><a class="btn primary" href="${esc(d.url)}" target="_blank" rel="noopener">${icon('external-link')}USGS event page</a>${readBtn(null, 'Earthquake')}</div></div>`, null);
+}
+function showEonet(e) {
+  flyTo(e.lat, e.lng, 0.8);
+  openInfo(`<div class="info-main"><h2>${esc(e.title)}</h2>
+    ${meta(e.icon, '#ff8a7a', [esc(e.catTitle || ''), e.date ? `<span class="num">${esc(new Date(e.date).toUTCString().slice(5, 16))}</span>` : '', coords(e.lat, e.lng)])}
+    <p class="summary">An ongoing natural event tracked by NASA's Earth Observatory Natural Event Tracker (EONET).</p>
+    ${e.sources.length ? `<h3>Sources</h3><div class="chips-row">${e.sources.map((s) => `<a class="chip" href="${esc(s.url)}" target="_blank" rel="noopener">${icon('external-link')}${esc(s.id)}</a>`).join('')}</div>` : ''}
+    <div class="actions">${closeupBtns(e.lat, e.lng)}</div></div>`, null);
+}
+function showIss(p) {
+  openInfo(`<div class="info-main"><h2>International Space Station</h2>
+    ${meta('rocket', '#9db1ff', ['Live position', coords(p.lat, p.lng)])}
+    ${figures({ Altitude: Math.round(p.alt) + ' km', Speed: Math.round(p.vel).toLocaleString('en-US') + ' km/h', Sunlight: p.vis === 'daylight' ? 'In sunlight' : 'In Earth’s shadow' })}
+    <p class="summary">The ISS circles Earth about every 92 minutes, about 16 times a day. Position from wheretheiss.at.</p>
+    <div class="actions"><button class="btn primary" data-fly="${p.lat},${p.lng},1.2">${icon('crosshair')}Follow it</button>${readBtn(null, 'International Space Station')}</div></div>`, null);
+}
+
+// ============================================================ measuring tool
+function startMeasure() {
+  if (learn.active()) learn.stop();
+  const pts = [];
+  toast('Click the first point on the globe.');
+  learnCtxPick((pt) => {
+    pts.push(pt);
+    if (pts.length === 1) { state.guess = { guess: pt, truth: { ...pt, name: 'Start' } }; refreshMarkers(); toast('Now click the second point.'); return; }
+    learnCtxPick(null);
+    const [a, b] = pts, km = kmBetween(a, b);
+    state.guess = { guess: a, truth: { ...b, name: `${Math.round(km).toLocaleString('en-US')} km` } };
+    globe.arcsData([{ startLat: a.lat, startLng: a.lng, endLat: b.lat, endLng: b.lng }]);
+    refreshMarkers();
+    const t = (h) => (h < 1 ? `${Math.round(h * 60)} min` : h < 48 ? `${h.toFixed(1)} h` : `${(h / 24).toFixed(1)} days`);
+    openInfo(`<div class="info-main"><h2 class="num">${km < 10 ? km.toFixed(2) : Math.round(km).toLocaleString('en-US')} km</h2>
+      ${meta('ruler', '#9db1ff', ['Great-circle distance', `${Math.round(km * 0.621371).toLocaleString('en-US')} miles`, `${Math.round(km / 1.852).toLocaleString('en-US')} nautical miles`])}
+      ${figures({ 'Walking (5 km/h)': t(km / 5), 'Driving (80 km/h, straight line)': t(km / 80), 'Airliner (850 km/h)': t(km / 850), 'Light': `${((km / 299792) * 1000).toFixed(2)} ms`, 'Share of Earth’s circumference': `${((km / 40075) * 100).toFixed(1)}%` })}
+      <p class="muted small">The shortest path over Earth's surface (a great circle), the route planes and ships approximate. Real roads and flight paths are longer.</p>
+      <div class="actions"><button class="btn primary" data-measure-again>${icon('ruler')}Measure again</button><button class="btn" data-measure-clear>${icon('x')}Clear</button></div></div>`, null);
+    $('[data-measure-again]', infoBody).onclick = startMeasure;
+    $('[data-measure-clear]', infoBody).onclick = () => { state.guess = null; globe.arcsData([]); refreshMarkers(); closeInfo(); };
+  });
+}
+function learnCtxPick(fn) { pickHandler = fn; state.pickMode = !!fn; refreshMarkers(); globeEl.style.cursor = fn ? 'crosshair' : null; }
+$('#measure-btn').onclick = startMeasure;
 
 // ============================================================ boot
 fillIcons();
@@ -1297,6 +1418,7 @@ document.body.classList.add('show-labels');
 const boot = readHash();
 setBasemap(state.basemap);
 renderTicks();
+renderMarks();
 paintTempTrack();
 renderSide();
 buildRangePolys();
@@ -1310,4 +1432,6 @@ if (boot.key) setTimeout(() => openByKey(boot.key), 400);
 try { if (!localStorage.getItem('ee-visited') && !location.hash) welcome.classList.remove('hidden'); } catch { welcome.classList.remove('hidden'); }
 setTimeout(() => $('#loader').classList.add('fade'), 500);
 setTimeout(() => $('#loader').remove(), 1400);
+// offline support (service worker) on https or localhost
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch((e) => console.warn('service worker', e));
 window.__earth = { fly, globe, state, setYear, showAnimal, toggleAnimal, toggleResource, showResource, openByKey };

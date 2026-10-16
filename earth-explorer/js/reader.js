@@ -16,7 +16,23 @@ export function createReader(ctx) {
   const history = [];
   let current = null;
 
+  // Read aloud with the browser's speech synthesis, paragraph by paragraph (keeps long articles responsive).
+  function stopSpeech() { if ('speechSynthesis' in window) speechSynthesis.cancel(); root.querySelector('[data-r="listen"]')?.setAttribute('aria-pressed', 'false'); const l = root.querySelector('[data-r="listen"] span'); if (l) l.textContent = 'Listen'; }
+  function toggleSpeech(btn) {
+    if (speechSynthesis.speaking) return stopSpeech();
+    const parts = [...root.querySelectorAll('.rd-col h1, .rd-col .rd-standfirst, .rd-body h2, .rd-body h3, .rd-body p, .rd-body li')].map((n) => n.textContent.trim()).filter((t) => t.length > 1);
+    if (!parts.length) return;
+    btn.setAttribute('aria-pressed', 'true');
+    btn.querySelector('span').textContent = 'Stop';
+    parts.forEach((t, i) => {
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = 'en-GB'; u.rate = 1;
+      if (i === parts.length - 1) u.onend = stopSpeech;
+      speechSynthesis.speak(u);
+    });
+  }
   function close() {
+    stopSpeech();
     root.classList.add('hidden');
     document.body.classList.remove('reading');
     history.length = 0;
@@ -33,6 +49,8 @@ export function createReader(ctx) {
     else if (act === 'globe') { const [lat, lng] = b.dataset.ll.split(',').map(Number); close(); flyTo(lat, lng, 0.6); }
     else if (act === 'year') { setYear(+b.dataset.year, true); toastYear(+b.dataset.year); }
     else if (act === 'item') { close(); openByKey(b.dataset.key); }
+    else if (act === 'retry') open(current, true);
+    else if (act === 'listen') toggleSpeech(b);
     else if (act === 'toc') { const t = root.querySelector('#' + CSS.escape(b.dataset.id)); t?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); }
   });
   const toastYear = (y) => ctx.toast?.(`Time machine set to ${fmtYear(y)}. Close the reader to see the globe in that year.`);
@@ -43,7 +61,17 @@ export function createReader(ctx) {
       cache.set(title, (async () => {
         const enc = encodeURIComponent(title.replace(/ /g, '_'));
         const [html, sum] = await Promise.all([
-          fetch(`https://en.wikipedia.org/api/rest_v1/page/html/${enc}?redirect=true`).then((r) => (r.ok ? r.text() : null)).catch(() => null),
+          (async () => {
+            for (let i = 0; i < 3; i++) {
+              try {
+                const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/html/${enc}?redirect=true`);
+                if (r.ok) return r.text();
+                if (r.status !== 429 && r.status !== 503) return null;
+                await new Promise((res) => setTimeout(res, Math.max(1000 * 2 ** i, Math.min(10, +r.headers.get('retry-after') || 0) * 1000)));
+              } catch { await new Promise((res) => setTimeout(res, 1000 * 2 ** i)); }
+            }
+            return null;
+          })(),
           getJSON(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`),
         ]);
         if (!html) { cache.delete(title); return null; }
@@ -130,6 +158,7 @@ export function createReader(ctx) {
   }
 
   async function open(opts, isBack = false) {
+    stopSpeech();
     current = opts;
     const { title, item } = opts;
     root.classList.remove('hidden');
@@ -137,6 +166,7 @@ export function createReader(ctx) {
     root.innerHTML = `<header class="rd-head">
         <div class="rd-crumb">${history.length ? `<button class="btn" data-r="back">${icon('chevron-left')}Back</button>` : ''}<span>${esc(item?.kind || 'Article')}</span>${item?.place ? `<span class="sep">·</span><span>${esc(item.place)}</span>` : ''}</div>
         <div class="rd-tools"><label class="sr-only" for="rd-toc">Contents</label><select id="rd-toc" aria-label="Jump to section"><option>Contents</option></select>
+        ${'speechSynthesis' in window ? `<button class="btn" data-r="listen" aria-pressed="false">${icon('radio')}<span>Listen</span></button>` : ''}
         <a class="btn" target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}">${icon('external-link')}Wikipedia</a>
         <button class="btn primary" data-r="close">${icon('globe')}Back to globe</button></div>
       </header>
@@ -146,7 +176,7 @@ export function createReader(ctx) {
     if (current !== opts) return;
     const col = root.querySelector('.rd-col');
     if (!data) {
-      col.innerHTML = `<h1>${esc(title)}</h1><p class="rd-error">This article could not be loaded. Wikipedia may be busy or you may be offline. <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}" target="_blank" rel="noopener">Open it on Wikipedia</a> or try again in a moment.</p>`;
+      col.innerHTML = `<h1>${esc(title)}</h1><p class="rd-error">This article could not be loaded. Wikipedia may be busy or you may be offline. <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}" target="_blank" rel="noopener">Open it on Wikipedia</a> or <button class="btn" data-r="retry">${icon('refresh-cw')}try again</button></p>`;
       return;
     }
     const { body, toc, standfirst } = clean(data.html);

@@ -48,6 +48,8 @@ export function createLearn(ctx) {
   }
   function endTour() {
     if (!tour) return;
+    clearTimeout(tour.auto); clearTimeout(tour.descend);
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
     tour = null;
     ctx.tourOn(false);
     ctx.closeInfo();
@@ -60,7 +62,13 @@ export function createLearn(ctx) {
     save();
     if (s.year != null) ctx.setYear(s.year, true);
     ctx.setLayers({ animals: s.animals || null, resources: s.resources || null });
-    ctx.fly({ lat: s.lat, lng: s.lng, altitude: s.alt ?? 0.8 }, 2200);
+    // documentary camera: long hops pull back to show the journey, then descend on the stop
+    const prev = tour.lastPos, alt = s.alt ?? 0.8;
+    const far = prev && ctx.km(prev, s) > 2500;
+    tour.lastPos = { lat: s.lat, lng: s.lng };
+    clearTimeout(tour.descend);
+    if (far) { ctx.fly({ lat: s.lat, lng: s.lng, altitude: Math.max(1.9, alt) }, 1800); tour.descend = setTimeout(() => ctx.fly({ lat: s.lat, lng: s.lng, altitude: alt }, 1600), 1900); }
+    else ctx.fly({ lat: s.lat, lng: s.lng, altitude: alt }, 2200);
     const q = s.question;
     const ans = tour.answered[i];
     ctx.openInfo(`${s.wiki ? ctx.gallery(s.wiki, s.title, 'compass') : ''}<div class="info-main tour-step">
@@ -75,6 +83,7 @@ export function createLearn(ctx) {
         ${i < t.steps.length - 1 ? `<button class="btn primary" data-tour-next>Next stop${icon('arrow-right')}</button>` : `<button class="btn primary" data-tour-finish>${icon('circle-check')}Finish tour</button>`}
         ${s.open ? `<button class="btn" data-tour-open="${esc(s.open)}">${icon('info')}Open its card</button>` : ''}
         ${s.wiki ? `<button class="btn" data-read="" data-title="${esc(s.wiki.replace(/_/g, ' '))}">${icon('book-open')}Read more</button>` : ''}
+        ${'speechSynthesis' in window ? `<button class="btn" data-tour-narrate aria-pressed="${!!tour.narrate}">${icon('radio')}${tour.narrate ? 'Stop narration' : 'Narrate'}</button>` : ''}
         <button class="btn" data-tour-exit>${icon('x')}Leave tour</button>
       </div></div>`, null);
     const root = document.getElementById('info-body');
@@ -84,6 +93,20 @@ export function createLearn(ctx) {
     root.querySelector('[data-tour-exit]')?.addEventListener('click', endTour);
     root.querySelector('[data-tour-open]')?.addEventListener('click', (e) => ctx.openByKey(e.currentTarget.dataset.tourOpen));
     root.querySelectorAll('[data-ans]').forEach((b) => (b.onclick = () => { tour.answered[i] = +b.dataset.ans; showStep(); }));
+    root.querySelector('[data-tour-narrate]')?.addEventListener('click', () => { tour.narrate = !tour.narrate; if (!tour.narrate) speechSynthesis.cancel(); showStep(); });
+    if (tour.narrate && tour.spoken !== i) narrate(s, i);
+  }
+  // Narration: read the stop aloud, then move on by itself (stopping at questions so the learner can answer).
+  function narrate(s, i) {
+    tour.spoken = i;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(`${s.title}. ${s.text}${s.question ? ' ' + s.question.q : ''}`);
+    u.lang = 'en-GB';
+    u.onend = () => {
+      if (!tour || !tour.narrate || tour.i !== i || s.question) return;
+      tour.auto = setTimeout(() => { if (tour && tour.narrate && tour.i === i && i < tour.t.steps.length - 1) { tour.i++; showStep(); } }, 1600);
+    };
+    speechSynthesis.speak(u);
   }
 
   // ---------------------------------------------------------------- quizzes

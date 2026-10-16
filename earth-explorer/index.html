@@ -8,6 +8,8 @@
   <meta name="theme-color" content="#05080f" />
   <link rel="preload" href="assets/fonts/public-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b54a' stroke-width='2' stroke-linecap='round'><circle cx='12' cy='12' r='10'/><path d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20'/></svg>" />
 </head>
@@ -34,11 +36,15 @@
         <option value="streets">Streets</option>
         <option value="night">City lights</option>
         <option value="gibs">NASA daily (timeline date)</option>
+        <option value="seasons">Seasons (NASA, by month)</option>
+        <option value="blackmarble">Night lights 2016 (NASA)</option>
+        <option value="temperature">Land temperature (NASA)</option>
       </select>
       <button id="toggle-nearby" class="chip" aria-pressed="true" title="When zoomed in, show every nearby place that has a Wikipedia article"><span data-icon="book-open"></span><span class="lbl-txt">Nearby</span></button>
       <button id="toggle-borders" class="chip" aria-pressed="true">Borders</button>
       <button id="toggle-labels" class="chip" aria-pressed="true">Labels</button>
       <button id="toggle-rotate" class="chip" aria-pressed="false">Spin</button>
+      <button id="measure-btn" class="icon-btn" aria-label="Measure a distance" title="Measure a distance between two points"><span data-icon="ruler"></span></button>
       <button id="share-btn" class="icon-btn" aria-label="Copy a link to this view" title="Copy a link to this view"><span data-icon="share-2"></span></button>
       <button id="help-btn" class="icon-btn" aria-label="How to use Earth Explorer" aria-controls="welcome"><span data-icon="circle-help"></span></button>
     </div>
@@ -96,6 +102,7 @@
     </div>
     <div class="tl-slider-wrap">
       <input id="tl-slider" type="range" min="0" max="1000" step="1" value="1000" aria-label="Year" title="Track colour shows global temperature: blue colder, red warmer" />
+      <div id="tl-marks" aria-hidden="true" title="Small marks: years with a historical border map"></div>
       <div id="tl-ticks" aria-hidden="true"></div>
     </div>
     <div id="tl-stats"></div>
