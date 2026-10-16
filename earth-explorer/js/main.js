@@ -1,6 +1,11 @@
 import { Globe } from '../vendor/earth-libs.js';
 import { THREE, createAnimal, FLYING } from './animals3d.js';
 import { icon } from './icons.js';
+import { createReader } from './reader.js';
+import { createCountries } from './countries.js';
+import { createNews } from './news.js';
+import { createLearn } from './learn.js';
+import { createLive, gibsTiles } from './live.js';
 
 // ============================================================ helpers
 const $ = (s, r = document) => r.querySelector(s);
@@ -67,14 +72,16 @@ const fillIcons = (root = document) => $$('[data-icon]', root).forEach((el) => (
 async function safeImport(path) {
   try { return await import(path); } catch (e) { console.warn('Could not load', path, e); return {}; }
 }
-const [wMod, lMod, aMod, rMod, tMod, countriesGeo] = await Promise.all([
+const [wMod, lMod, aMod, rMod, tMod, countriesGeo, toursMod] = await Promise.all([
   safeImport('./data/wonders.js'),
   safeImport('./data/landmarks.js'),
   safeImport('./data/animals.js'),
   safeImport('./data/resources.js'),
   safeImport('./data/timeline.js'),
   fetch(new URL('../assets/data/countries.geojson', import.meta.url)).then((r) => r.json()),
+  safeImport('./data/tours.js'),
 ]);
+const TOURS = toursMod.TOURS || [];
 const WONDERS = wMod.WONDERS || [];
 const LANDMARKS = lMod.LANDMARKS || [];
 const ANIMALS = aMod.ANIMALS || [];
@@ -128,7 +135,12 @@ const state = {
   tab: 'wonders',
   altitude: 2.5,
   selectedKey: null,
+  pickMode: false,
+  quizCountry: null,
+  guess: null,
 };
+
+let news = null, reloadNews = null, pickHandler = null, live = null, reloadLive = null; // feature modules created after the globe is set up
 
 // ============================================================ globe
 const globeEl = $('#globe');
@@ -149,11 +161,19 @@ const BASEMAPS = {
   streets: { tiles: (x, y, l) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${l}/${y}/${x}`, credit: 'Map © Esri, HERE, Garmin, OpenStreetMap contributors' },
   bluemarble: { img: TEX + 'earth-blue-marble.jpg', bump: TEX + 'earth-topology.png', credit: 'NASA Blue Marble' },
   night: { img: TEX + 'earth-night.jpg', bump: TEX + 'earth-topology.png', credit: 'NASA Earth at Night' },
+  gibs: { dynamic: true, credit: 'Imagery: NASA GIBS / Worldview, MODIS Terra' },
 };
 function setBasemap(key) {
   if (!BASEMAPS[key]) key = 'satellite';
   state.basemap = key;
-  const b = BASEMAPS[key];
+  let b = BASEMAPS[key];
+  if (b.dynamic) {
+    const date = live?.gibsDateFor(state.year);
+    if (!date) { toast('NASA daily imagery starts in February 2000. Showing the satellite mosaic instead.'); return setBasemap('satellite'); }
+    b = { ...b, tiles: gibsTiles(date), credit: `${b.credit}, ${date}` };
+    state.gibsDate = date;
+  }
+  globe.globeTileEngineMaxLevel(key === 'gibs' ? 9 : 19);
   if (b.tiles) globe.globeImageUrl(null).bumpImageUrl(null).globeTileEngineUrl(b.tiles);
   else globe.globeTileEngineUrl(null).globeImageUrl(b.img).bumpImageUrl(b.bump || null);
   $('#attribution').textContent = `${b.credit} · Data: Natural Earth, Wikipedia, NOAA, NASA`;
@@ -190,6 +210,7 @@ function onZoom(pov) {
   if (fq !== onZoom._fq) { onZoom._fq = fq; globe.polygonCapColor(polyCap); }
   scaleMinis();
   queueNearby();
+  live?.onZoom(pov.altitude);
 }
 globe.onZoom(onZoom);
 
@@ -278,6 +299,7 @@ function countryPolys() {
 const refreshPolygons = () => globe.polygonsData([...countryPolys(), ...changeObjs, ...rangeObjs]);
 function polyCap(d) {
   if (d.kind === 'country') {
+    if (state.quizCountry) return d.iso3 === state.quizCountry ? 'rgba(240, 181, 74, 0.62)' : 'rgba(255,255,255,0.02)';
     const ch = currentChoropleth();
     if (ch && !state.histFeatures) {
       const p = ch.map[d.iso3];
@@ -304,6 +326,7 @@ globe
   .polygonCapCurvatureResolution(3)
   .polygonsTransitionDuration(0)
   .polygonLabel((d) => {
+    if (state.quizCountry || state.pickMode) return '';
     if (d.kind === 'country') {
       const ch = currentChoropleth();
       const p = ch && !d.hist ? ch.map[d.iso3] : null;
@@ -319,7 +342,9 @@ globe
     if (prev !== state.hoverCountry) globe.polygonCapColor(polyCap).polygonAltitude(globe.polygonAltitude());
     globeEl.style.cursor = d ? 'pointer' : null;
   })
-  .onPolygonClick((d) => {
+  .onPolygonClick((d, ev, pt) => {
+    if (pickHandler) { if (pt) pickHandler({ lat: pt.lat, lng: pt.lng }); return; }
+    if (state.quizCountry) return;
     if (d.kind === 'country') d.hist ? showPolity(d) : showCountry(d);
     else if (d.kind === 'range') showAnimal(d.animal.id);
     else if (d.kind === 'change') showChange(d.change);
@@ -378,6 +403,11 @@ function markerEl(d) {
 }
 function buildMarkers() {
   const m = [];
+  if (state.guess) {
+    m.push({ key: 'q:guess:' + state.guess.guess.lat, lat: state.guess.guess.lat, lng: state.guess.guess.lng, icon: 'crosshair', label: 'Your answer', color: '#9db1ff', open: () => {} });
+    m.push({ key: 'q:truth:' + state.guess.truth.lat, lat: state.guess.truth.lat, lng: state.guess.truth.lng, icon: 'map-pin', label: state.guess.truth.name, color: '#f0b54a', open: () => {} });
+  }
+  if (state.pickMode || state.guess) return m;
   if (state.layers.wonders) {
     WONDERS.filter((w) => !state.wonderTypes || state.wonderTypes.has(w.type)).forEach((w) =>
       m.push({ key: 'w:' + w.id, lat: w.lat, lng: w.lng, icon: wonderIcon(w), label: w.name, color: C_WONDER, open: () => showWonder(w) }));
@@ -398,6 +428,9 @@ function buildMarkers() {
     const a = ANIMAL[id];
     (a?.hotspots || []).forEach((h, i) => m.push({ key: `a:${id}:${i}`, lat: h.lat, lng: h.lng, icon: 'paw-print', label: `${a.name} · ${h.name}`, color: a.color, small: true, open: () => showAnimal(id, h) }));
   });
+  if (state.tab === 'news' && news) {
+    news.pins().slice(0, 150).forEach((e, i) => m.push({ key: 'n:' + (e.lat.toFixed(3) + e.lng.toFixed(3) + i), lat: e.lat, lng: e.lng, icon: 'newspaper', label: e.text.replace(/<[^>]+>/g, '').slice(0, 80), color: '#e9e3d2', small: true, cls: 'news', open: () => showNewsItem(e) }));
+  }
   if (state.nearby && state.altitude < NEARBY_ALT) {
     nearbyVisible().forEach((p) => m.push({ key: 'p:' + p.pageid, lat: p.lat, lng: p.lng, icon: 'book-open', label: p.title, color: C_WIKI, cls: 'wiki', open: () => showWikiPlace(p) }));
   }
@@ -640,7 +673,7 @@ function closeInfo() {
   info.classList.add('hidden');
   markSelected(null);
 }
-$('#info-close').onclick = closeInfo;
+$('#info-close').onclick = () => (learn.active() ? learn.stop() : closeInfo());
 function figures(obj) {
   const e = Object.entries(obj || {}).filter(([, v]) => v != null && v !== '');
   return e.length ? `<dl class="figures">${e.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : '';
@@ -649,6 +682,26 @@ const factList = (f, title = 'Did you know?') => (f?.length ? `<h3>${title}</h3>
 const meta = (iconName, color, parts) => `<div class="meta" style="--c:${color}">${icon(iconName)}${parts.filter(Boolean).map((p, i) => (i ? '<span class="sep">·</span>' : '') + `<span>${p}</span>`).join('')}</div>`;
 const wikiLink = (title) => (title ? `<a class="btn" href="https://en.wikipedia.org/wiki/${wikiTitle(title)}" target="_blank" rel="noopener">${icon('book-open')}Read on Wikipedia</a>` : '');
 const closeupBtns = (lat, lng) => `<button class="btn primary" data-closeup="${lat},${lng}">${icon('satellite')}Satellite close-up</button><button class="btn" data-fly="${lat},${lng},0.35">${icon('crosshair')}Fly here</button>`;
+const readBtn = (key, title) => (title ? `<button class="btn" data-read="${esc(key)}" data-title="${esc(String(title).replace(/_/g, ' '))}">${icon('book-open')}Read full article</button>` : '');
+const kmBetween = (a, b) => { const R = 6371, dLat = ((b.lat - a.lat) * Math.PI) / 180, dLng = ((b.lng - a.lng) * Math.PI) / 180; const s = Math.sin(dLat / 2) ** 2 + Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); };
+function relatedTo(pt, selfKey, limit = 6) {
+  if (!pt || pt.lat == null) return [];
+  return [...WONDERS.map((w) => ({ key: 'w:' + w.id, name: w.name, lat: w.lat, lng: w.lng })), ...LANDMARKS.map((l) => ({ key: 'l:' + l.id, name: l.name, lat: l.lat, lng: l.lng }))]
+    .filter((x) => x.key !== selfKey).map((x) => ({ ...x, km: kmBetween(pt, x) })).filter((x) => x.km < 1500).sort((a, b) => a.km - b.km).slice(0, limit);
+}
+/** Margin data for the article reader, from our own curated datasets. */
+function itemFor(key) {
+  if (!key) return null;
+  const i = key.indexOf(':'), k = key.slice(0, i), id = key.slice(i + 1);
+  if (k === 'w' && WONDER[id]) { const w = WONDER[id]; return { kind: `Natural wonder · ${w.type}`, place: w.country, lat: w.lat, lng: w.lng, figures: { ...(w.stats || {}), 'UNESCO World Heritage': w.unesco || null }, dates: [w.unesco ? { year: w.unesco, label: 'Inscribed as UNESCO World Heritage' } : null].filter(Boolean), related: relatedTo(w, key) }; }
+  if (k === 'l' && LANDMARK[id]) { const l = LANDMARK[id]; return { kind: `Landmark · ${l.category}`, place: [l.city, l.country].filter(Boolean).join(', '), lat: l.lat, lng: l.lng, figures: { 'Built by': l.builder, Height: l.height, ...(l.stats || {}) }, dates: [l.built != null ? { year: l.built, label: 'Completed' } : null, l.destroyed != null ? { year: l.destroyed, label: 'Destroyed' } : null].filter(Boolean), related: relatedTo(l, key) }; }
+  if (k === 'a' && ANIMAL[id]) { const a = ANIMAL[id], h = a.hotspots?.[0]; return { kind: `Animal · ${a.group}`, place: a.habitat, lat: h?.lat, lng: h?.lng, figures: { 'IUCN status': STATUS[a.status] || a.status, Population: a.population, Size: a.size, Lifespan: a.lifespan, 'Top speed': a.speed, Diet: a.diet }, dates: [a.extinct != null ? { year: a.extinct, label: 'Last known alive' } : null, a.pastRange ? { year: a.pastRange.until - 50, label: 'Historic range still intact' } : null].filter(Boolean), source: 'Range shown on the globe is a simplified approximation.' }; }
+  if (k === 'e' && EVENT_BY_ID[id]) { const e = EVENT_BY_ID[id]; return { kind: `Event · ${e.type}`, place: null, lat: e.lat, lng: e.lng, dates: [{ year: e.year, label: e.name }], related: relatedTo(e, key) }; }
+  if (k === 'c' && COUNTRY_BY_ISO3[id]) { const c = COUNTRY_BY_ISO3[id], ce = countryCenter(c), p = c.props; return { kind: `Country · ${p.CONTINENT || ''}`, place: p.SUBREGION, lat: ce?.lat, lng: ce?.lng, figures: { Population: p.POP_EST ? fmtNum(p.POP_EST) : null, GDP: p.GDP_MD ? '$' + fmtNum(p.GDP_MD * 1e6) : null } }; }
+  if (k === 'r' && RESOURCE[id]) { const r = RESOURCE[id]; return { kind: 'Natural resource', figures: { Reserves: r.reserves, Production: r.production } }; }
+  if (k === 'p') { const p = nearbyPlaces.get(+id); return p ? { kind: 'Place', lat: p.lat, lng: p.lng, related: relatedTo(p, key) } : null; }
+  return null;
+}
 const coords = (lat, lng) => `<span class="num">${Math.abs(lat).toFixed(3)}° ${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lng).toFixed(3)}° ${lng >= 0 ? 'E' : 'W'}</span>`;
 function markSelected(key) {
   state.selectedKey = key;
@@ -669,6 +722,7 @@ function bindActions() {
   $$('[data-site]', infoBody).forEach((b) => (b.onclick = () => { const [rid, i] = b.dataset.site.split('|'); showSite(RESOURCE[rid], RESOURCE[rid].sites[+i]); }));
   $$('[data-item]', infoBody).forEach((b) => (b.onclick = () => openByKey(b.dataset.item)));
   $$('[data-res]', infoBody).forEach((b) => (b.onclick = () => { toggleResource(b.dataset.res, true); showResource(b.dataset.res, false); }));
+  $$('[data-read]', infoBody).forEach((b) => (b.onclick = () => reader.open({ title: b.dataset.title, item: itemFor(b.dataset.read) })));
   $$('[data-remove-animal]', infoBody).forEach((b) => (b.onclick = () => { toggleAnimal(b.dataset.removeAnimal, false); closeInfo(); }));
 }
 
@@ -681,7 +735,7 @@ function showWonder(w) {
     <p class="summary">${esc(w.summary)}</p>
     ${figures({ ...(w.stats || {}), Formed: formed, 'UNESCO World Heritage': w.unesco || null })}
     ${factList(w.facts)}${wikiExtract(w.wiki)}
-    <div class="actions">${closeupBtns(w.lat, w.lng)}${wikiLink(w.wiki)}</div></div>`, 'w:' + w.id);
+    <div class="actions">${readBtn('w:' + w.id, w.wiki)}${closeupBtns(w.lat, w.lng)}${wikiLink(w.wiki)}</div></div>`, 'w:' + w.id);
 }
 function showLandmark(l) {
   flyTo(l.lat, l.lng, 0.6);
@@ -694,7 +748,7 @@ function showLandmark(l) {
     <p class="summary">${esc(l.summary)}</p>
     ${figures({ Completed: l.built != null ? fmtYear(l.built) : null, Destroyed: l.destroyed != null ? fmtYear(l.destroyed) : null, 'Built by': l.builder, Height: l.height, ...(l.stats || {}) })}
     ${factList(l.facts)}${wikiExtract(l.wiki)}
-    <div class="actions">${closeupBtns(l.lat, l.lng)}${wikiLink(l.wiki)}</div></div>`, 'l:' + l.id);
+    <div class="actions">${readBtn('l:' + l.id, l.wiki)}${closeupBtns(l.lat, l.lng)}${wikiLink(l.wiki)}</div></div>`, 'l:' + l.id);
 }
 function showEvent(e) {
   flyTo(e.lat, e.lng, 0.9);
@@ -702,7 +756,7 @@ function showEvent(e) {
     <h2>${esc(e.name)}</h2>
     ${meta(EVENT_ICON[e.type] || 'map-pin', EVENT_COLOR[e.type], [`<span class="num">${esc(fmtYear(e.year))}</span>`, esc(e.type[0].toUpperCase() + e.type.slice(1)), coords(e.lat, e.lng)])}
     <p class="summary">${esc(e.summary)}</p>${wikiExtract(e.wiki)}
-    <div class="actions"><button class="btn primary" data-year="${e.year}">${icon('hourglass')}Go to ${esc(fmtYear(e.year))}</button><button class="btn" data-fly="${e.lat},${e.lng},0.35">${icon('crosshair')}Fly here</button>${wikiLink(e.wiki)}</div></div>`, 'e:' + e.id);
+    <div class="actions">${readBtn('e:' + e.id, e.wiki)}<button class="btn primary" data-year="${e.year}">${icon('hourglass')}Go to ${esc(fmtYear(e.year))}</button><button class="btn" data-fly="${e.lat},${e.lng},0.35">${icon('crosshair')}Fly here</button>${wikiLink(e.wiki)}</div></div>`, 'e:' + e.id);
 }
 function showChange(c) {
   const f = changeFactor(c), z = c.zones?.[0], st = CHANGE_STYLE[c.kind] || CHANGE_STYLE.water;
@@ -738,7 +792,7 @@ function showResource(id, doFly = true) {
     ${factList(r.facts)}
     <h3>Major deposits and sites</h3>
     ${(r.sites || []).map((s, i) => `<button class="row-btn" data-site="${r.id}|${i}"><span class="rb-name">${esc(s.name)}</span><span class="rb-val">${esc(s.country)}</span><small>${esc(s.kind || '')}</small></button>`).join('')}
-    ${wikiExtract(RES_WIKI[id])}<div class="actions">${wikiLink(RES_WIKI[id])}</div></div>`, 'r:' + id);
+    ${wikiExtract(RES_WIKI[id])}<div class="actions">${readBtn('r:' + id, RES_WIKI[id])}${wikiLink(RES_WIKI[id])}</div></div>`, 'r:' + id);
 }
 function countryCenter(c) {
   let best = null, area = -1;
@@ -762,11 +816,14 @@ function showCountry(c) {
   openInfo(`${gallery(title, c.longName, 'flag')}<div class="info-main">
     <h2>${c.iso2 ? `<img src="https://flagcdn.com/w80/${c.iso2.toLowerCase()}.png" alt="Flag of ${esc(c.longName)}" style="height:22px;border-radius:3px;vertical-align:-2px;margin-right:8px">` : ''}${esc(c.longName)}</h2>
     ${meta('globe', '#c9d3ea', [esc(p.CONTINENT || ''), esc(p.SUBREGION || ''), p.FORMAL_EN && p.FORMAL_EN !== c.longName ? esc(p.FORMAL_EN) : ''])}
+    ${countries.factsHtml(c.iso3)}
     ${figures({ Population: p.POP_EST ? fmtNum(p.POP_EST) + (p.POP_YEAR ? ` (${p.POP_YEAR})` : '') : null, GDP: p.GDP_MD ? '$' + fmtNum(p.GDP_MD * 1e6) + (p.GDP_YEAR ? ` (${p.GDP_YEAR})` : '') : null, Economy: (p.ECONOMY || '').replace(/^\d+\.\s*/, ''), 'Income group': (p.INCOME_GRP || '').replace(/^\d+\.\s*/, '') })}
+    <h3>Over time</h3><div class="charts" id="c-charts"></div>
     ${res.length ? `<h3>Major producer of</h3>${res.map(({ r, pp }) => `<button class="row-btn" data-res="${r.id}"><span class="rb-name">${esc(r.name)}</span><span class="rb-val">${pp.share}% of world</span>${pp.value ? `<small>${esc(pp.value)}</small>` : ''}</button>`).join('')}` : ''}
     ${ws.length ? `<h3>Natural wonders</h3>${ws.map((w) => `<button class="row-btn" data-item="w:${w.id}"><span class="rb-name">${esc(w.name)}</span><span class="rb-val">${esc(w.type)}</span></button>`).join('')}` : ''}
     ${ls.length ? `<h3>Landmarks</h3>${ls.map((l) => `<button class="row-btn" data-item="l:${l.id}"><span class="rb-name">${esc(l.name)}</span><span class="rb-val num">${esc(fmtYear(l.built))}</span></button>`).join('')}` : ''}
-    ${wikiExtract(title)}<div class="actions">${wikiLink(title)}</div></div>`, 'c:' + c.iso3);
+    ${wikiExtract(title)}<div class="actions">${readBtn('c:' + c.iso3, title)}${wikiLink(title)}</div></div>`, 'c:' + c.iso3);
+  countries.mountIndicators(document.getElementById('c-charts'), [c.iso3], [c.longName]);
 }
 function showPolity(d) {
   openInfo(`${gallery(d.name, d.name, 'flag')}<div class="info-main">
@@ -774,14 +831,14 @@ function showPolity(d) {
     ${meta('scroll', '#e2a2f2', [`Historical state, borders c. <span class="num">${esc(fmtYear(state.histYear))}</span>`, d.subject && d.subject !== d.name ? `part of ${esc(d.subject)}` : ''])}
     ${wikiExtract(d.name)}
     <p class="muted small">Historical borders come from the historical-basemaps project (A. Ourednik). Pre-modern borders are approximate and often contested.</p>
-    <div class="actions">${wikiLink(d.name)}</div></div>`, null);
+    <div class="actions">${readBtn('h:' + d.name, d.name)}${wikiLink(d.name)}</div></div>`, null);
 }
 function showWikiPlace(p) {
   openInfo(`${gallery(p.title, p.title, 'book-open')}<div class="info-main">
     <h2>${esc(p.title)}</h2>
     ${meta('book-open', C_WIKI, ['Nearby place on Wikipedia', coords(p.lat, p.lng)])}
     ${wikiExtract(p.title)}
-    <div class="actions">${closeupBtns(p.lat, p.lng)}${wikiLink(p.title)}</div></div>`, 'p:' + p.pageid);
+    <div class="actions">${readBtn('p:' + p.pageid, p.title)}${closeupBtns(p.lat, p.lng)}${wikiLink(p.title)}</div></div>`, 'p:' + p.pageid);
 }
 function showAnimal(id, hotspot) {
   const a = ANIMAL[id];
@@ -803,7 +860,7 @@ function showAnimal(id, hotspot) {
     ${a.hotspots?.length ? `<h3>Where to see it</h3>${a.hotspots.map((h) => `<button class="row-btn" data-fly="${h.lat},${h.lng},0.4"><span class="rb-name">${esc(h.name)}</span><span class="rb-val">${coords(h.lat, h.lng)}</span></button>`).join('')}` : ''}
     ${wikiExtract(a.wiki)}
     ${others.length ? `<h3>Also on the map</h3><div class="chips-row">${others.map((s) => `<button class="chip" data-animal="${s}"><span class="swatch" style="background:${ANIMAL[s].color}"></span>${esc(ANIMAL[s].name)}</button>`).join('')}</div>` : ''}
-    <div class="actions">${wikiLink(a.wiki)}<button class="btn" data-remove-animal="${id}">${icon('x')}Remove from map</button></div></div>`, 'a:' + id);
+    <div class="actions">${readBtn('a:' + id, a.wiki)}${wikiLink(a.wiki)}<button class="btn" data-remove-animal="${id}">${icon('x')}Remove from map</button></div></div>`, 'a:' + id);
 }
 function openByKey(key) {
   const i = key.indexOf(':'), k = key.slice(0, i), id = key.slice(i + 1);
@@ -895,6 +952,7 @@ function renderSide() {
       ${filterInput('history', 'Filter events')}
       ${evs.map((e) => `<button class="item" data-open="e:${e.id}">${dotIc(EVENT_ICON[e.type] || 'map-pin', EVENT_COLOR[e.type])}<span class="nm">${esc(e.name)}<small class="num">${esc(fmtYear(e.year))} · ${esc(e.type)}</small></span></button>`).join('')}`;
   }
+  if (PANELS[tab]) { PANELS[tab].render(sideContent); return; }
   sideContent.innerHTML = html;
 }
 sideContent.addEventListener('click', (ev) => {
@@ -939,12 +997,22 @@ sideContent.addEventListener('input', (ev) => {
   const nf = $(`[data-filter="${f.dataset.filter}"]`, sideContent);
   nf.focus(); nf.setSelectionRange(pos, pos);
 });
-$$('.side-tab').forEach((b) => (b.onclick = () => {
-  state.tab = b.dataset.tab;
-  $$('.side-tab').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+// Panels contributed by feature modules (countries, news, learn) render through this registry.
+const PANELS = {};
+function selectTab(tab, { reopen = true } = {}) {
+  const sb = $('#sidebar');
+  if (state.tab === tab && reopen && !sb.classList.contains('panel-closed')) { sb.classList.add('panel-closed'); return; }
+  sb.classList.remove('panel-closed', 'collapsed');
+  const prev = state.tab;
+  state.tab = tab;
+  $$('.rail-btn').forEach((x) => x.setAttribute('aria-selected', String(x.dataset.tab === tab)));
+  if (prev !== tab) PANELS[prev]?.leave?.();
   renderSide();
+  PANELS[tab]?.enter?.();
   sideContent.scrollTop = 0;
-}));
+  writeHash();
+}
+$$('.rail-btn').forEach((b) => (b.onclick = () => selectTab(b.dataset.tab)));
 $('#menu-toggle').onclick = () => $('#sidebar').classList.toggle('collapsed');
 
 // ============================================================ legend
@@ -1083,6 +1151,8 @@ function setYear(y, syncSlider = false, opts = {}) {
     loadHistoric();
     if (state.tab === 'landmarks' && !opts.playing) renderSide();
     if (!opts.playing) writeHash();
+    if (!opts.playing && reloadNews) reloadNews();
+    if (!opts.playing && reloadLive) reloadLive();
   });
 }
 slider.addEventListener('input', () => setYear(posToYear(+slider.value)));
@@ -1114,6 +1184,7 @@ const writeHash = debounce(() => {
   if (state.resources.size) q.set('r', [...state.resources].join(','));
   if (state.selectedKey && !/^[rap]:.*:/.test(state.selectedKey) && !state.selectedKey.startsWith('p:')) q.set('k', state.selectedKey);
   if (state.basemap !== 'satellite') q.set('m', state.basemap);
+  if (state.tab !== 'wonders') q.set('t', state.tab);
   const s = q.toString();
   history.replaceState(null, '', s ? '#' + s : location.pathname + location.search);
 }, 400);
@@ -1123,7 +1194,7 @@ function readHash() {
   (q.get('a') || '').split(',').filter((id) => ANIMAL[id]).forEach((id) => state.animals.add(id));
   (q.get('r') || '').split(',').filter((id) => RESOURCE[id]).forEach((id) => state.resources.add(id));
   const v = (q.get('v') || '').split(',').map(Number);
-  return { year: q.has('y') ? +q.get('y') : NOW, key: q.get('k'), view: v.length === 3 && v.every((x) => !isNaN(x)) ? v : null };
+  return { tab: q.get('t'), year: q.has('y') ? +q.get('y') : NOW, key: q.get('k'), view: v.length === 3 && v.every((x) => !isNaN(x)) ? v : null };
 }
 $('#share-btn').onclick = async () => {
   writeHash.flush?.();
@@ -1157,6 +1228,69 @@ document.addEventListener('keydown', (e) => {
 });
 window.addEventListener('resize', debounce(() => { globe.width(window.innerWidth).height(window.innerHeight); renderTicks(); }, 150));
 
+// ============================================================ article reader
+const reader = createReader({ esc, fmtYear, getJSON, flyTo, setYear: (y, s) => setYear(y, s), openByKey: (k) => openByKey(k), toast, openLightbox });
+
+// ============================================================ countries atlas
+const countries = createCountries({ esc, getJSON, COUNTRIES, COUNTRY_BY_ISO3, state, setYear: (y, s) => setYear(y, s), openInfo: (h, k) => openInfo(h, k) });
+PANELS.countries = { render: (el) => countries.renderPanel(el) };
+countries.ready.then(() => { if (state.tab === 'countries') renderSide(); });
+
+// ============================================================ news
+const NEWS_COUNTRY = { 'United States of America': 'United States', 'Dem. Rep. Congo': 'Democratic Republic of the Congo', 'Central African Rep.': 'Central African Republic', 'S. Sudan': 'South Sudan', 'Bosnia and Herz.': 'Bosnia and Herzegovina', 'Dominican Rep.': 'Dominican Republic', 'Eq. Guinea': 'Equatorial Guinea', 'Solomon Is.': 'Solomon Islands', "Côte d'Ivoire": 'Ivory Coast', Czechia: 'Czech Republic', 'Republic of the Congo': 'Republic of the Congo' };
+function showNewsItem(e) {
+  if (!e) return;
+  if (e.lat != null) flyTo(e.lat, e.lng, 0.9);
+  openInfo(`<div class="info-main">
+    <h2 class="news-title">${e.text.replace(/<a [^>]*class="src"[^>]*>.*?<\/a>/g, '').replace(/<[^>]+>/g, '').replace(/\s*\(\s*\)\s*$/, '').slice(0, 220)}</h2>
+    ${meta('newspaper', '#e9e3d2', [e.date ? `<span class="num">${esc(e.date)}${e.year && !/\d{4}/.test(e.date) ? ', ' + esc(fmtYear(e.year)) : ''}</span>` : '', e.category ? esc(e.category) : '', e.place ? `${esc(e.place)}` : 'Location not mapped'])}
+    <p class="summary news-body">${e.text}</p>
+    ${e.sources?.length ? `<h3>Reported by</h3><div class="chips-row">${e.sources.map((s) => `<a class="chip" href="${esc(s.url)}" target="_blank" rel="noopener">${icon('external-link')}${esc(s.name || new URL(s.url).hostname)}</a>`).join('')}</div>` : ''}
+    ${e.titles?.length ? `<h3>Background</h3><div class="chips-row">${e.titles.slice(0, 8).map((t) => `<button class="chip" data-read="" data-title="${esc(t)}">${icon('book-open')}${esc(t)}</button>`).join('')}</div>` : ''}
+    <div class="actions">${e.lat != null ? closeupBtns(e.lat, e.lng) : ''}</div></div>`, null);
+  $$('.news-body a[data-wiki]', infoBody).forEach((a) => (a.onclick = (ev) => { ev.preventDefault(); reader.open({ title: a.dataset.wiki }); }));
+}
+news = createNews({
+  esc, getJSON, fmtYear, state,
+  setYear: (y, s) => setYear(y, s),
+  refresh: () => { if (state.tab === 'news') renderSide(); refreshMarkers(); },
+  countryNames: () => [...new Set(COUNTRIES.map((c) => NEWS_COUNTRY[c.name] || c.name))].sort(),
+  showNewsItem: (e) => showNewsItem(e),
+  openArticle: (t) => reader.open({ title: t }),
+});
+PANELS.news = { render: (el) => news.renderPanel(el), enter: () => { news.load(); refreshMarkers(); }, leave: () => refreshMarkers() };
+reloadNews = debounce(() => { if (state.tab === 'news' && !playTimer) news.load(); }, 600);
+
+// ============================================================ learn (tours + quizzes)
+globe.onGlobeClick((pt) => pickHandler?.(pt));
+globe.arcColor(() => ['#9db1ff', '#f0b54a']).arcStroke(0.5).arcDashLength(0.4).arcDashGap(0.1).arcDashAnimateTime(REDUCED_MOTION ? 0 : 1600).arcAltitudeAutoScale(0.35);
+const learn = createLearn({
+  esc, fmtYear, TOURS, WONDERS, LANDMARKS, ANIMALS, COUNTRIES,
+  countryInfo: (iso3) => countries.info(iso3),
+  countryCenter, km: kmBetween, fly, gallery, toast,
+  openInfo: (h, k) => openInfo(h, k), closeInfo: () => closeInfo(), openByKey: (k) => openByKey(k),
+  setYear: (y, s) => setYear(y, s),
+  refreshPanel: () => { if (state.tab === 'learn') renderSide(); },
+  tourOn: (on) => document.body.classList.toggle('learning', on),
+  setLayers: ({ animals, resources }) => {
+    if (animals) { state.animals = new Set(animals.filter((a) => ANIMAL[a])); buildRangePolys(); refreshMinis(); }
+    if (resources) { state.resources = new Set(resources.filter((r) => RESOURCE[r])); globe.polygonCapColor(polyCap); }
+    if (animals || resources) { refreshPolygons(); refreshMarkers(); renderLegend(); }
+  },
+  pickOnGlobe: (fn) => { pickHandler = fn; state.pickMode = !!fn; refreshMarkers(); globeEl.style.cursor = fn ? 'crosshair' : null; },
+  highlightCountry: (iso3) => { state.quizCountry = iso3; if (iso3 && state.histFeatures) setYear(NOW, true); globe.polygonCapColor(polyCap); refreshPolygons(); },
+  showGuess: (g) => { state.guess = g; globe.arcsData(g ? [{ startLat: g.guess.lat, startLng: g.guess.lng, endLat: g.truth.lat, endLng: g.truth.lng }] : []); refreshMarkers(); },
+});
+PANELS.learn = { render: (el) => learn.renderPanel(el) };
+
+// ============================================================ live earth
+live = createLive({ THREE, globe, esc, state, getJSON, fly, openLightbox, setBasemap: (k) => { setBasemap(k); renderSide(); }, refresh: () => { if (state.tab === 'live') renderSide(); } });
+PANELS.live = { render: (el) => live.renderPanel(el), enter: () => live.loadEpic() };
+reloadLive = debounce(() => {
+  if (state.basemap === 'gibs') { const d = live.gibsDateFor(state.year); if (!d) setBasemap('satellite'); else if (d !== state.gibsDate) setBasemap('gibs'); }
+  if (state.tab === 'live') { live.loadEpic(); renderSide(); }
+}, 700);
+
 // ============================================================ boot
 fillIcons();
 document.body.classList.add('show-labels');
@@ -1171,6 +1305,7 @@ onZoom(globe.pointOfView());
 if (state.animals.size) refreshMinis();
 renderLegend();
 if (boot.view) fly({ lat: boot.view[0], lng: boot.view[1], altitude: boot.view[2] }, 0);
+if (boot.tab && $(`.rail-btn[data-tab="${boot.tab}"]`)) selectTab(boot.tab);
 if (boot.key) setTimeout(() => openByKey(boot.key), 400);
 try { if (!localStorage.getItem('ee-visited') && !location.hash) welcome.classList.remove('hidden'); } catch { welcome.classList.remove('hidden'); }
 setTimeout(() => $('#loader').classList.add('fade'), 500);
