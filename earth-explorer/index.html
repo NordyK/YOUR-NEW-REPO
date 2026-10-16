@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Earth Explorer</title>
+  <meta name="description" content="An interactive 3D globe of Earth's natural wonders, landmarks, wildlife, natural resources and history." />
+  <meta name="theme-color" content="#05080f" />
+  <link rel="preload" href="assets/fonts/public-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b54a' stroke-width='2' stroke-linecap='round'><circle cx='12' cy='12' r='10'/><path d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20'/></svg>" />
+</head>
+<body>
+  <div id="globe" aria-label="Interactive 3D globe" role="application"></div>
+
+  <div id="loader" aria-live="polite"><span data-icon="globe"></span><p>Spinning up the planet…</p></div>
+
+  <header id="topbar" class="panel">
+    <button id="menu-toggle" class="icon-btn" aria-label="Show or hide the menu" aria-controls="sidebar"><span data-icon="menu"></span></button>
+    <a class="brand" href="./" aria-label="Earth Explorer home"><span data-icon="globe"></span><span class="brand-name">Earth Explorer</span></a>
+    <div class="search-wrap" role="search">
+      <span data-icon="search"></span>
+      <label for="search" class="sr-only">Search</label>
+      <input id="search" type="search" placeholder="Search wonders, landmarks, animals, countries…" autocomplete="off" aria-controls="search-results" aria-expanded="false" />
+      <div id="search-results" class="hidden" role="listbox" aria-label="Search results"></div>
+    </div>
+    <div class="top-controls">
+      <label for="basemap" class="sr-only">Map style</label>
+      <select id="basemap">
+        <option value="satellite">Satellite</option>
+        <option value="bluemarble">Blue Marble</option>
+        <option value="topo">Terrain</option>
+        <option value="streets">Streets</option>
+        <option value="night">City lights</option>
+      </select>
+      <button id="toggle-nearby" class="chip" aria-pressed="true" title="When zoomed in, show every nearby place that has a Wikipedia article"><span data-icon="book-open"></span><span class="lbl-txt">Nearby</span></button>
+      <button id="toggle-borders" class="chip" aria-pressed="true">Borders</button>
+      <button id="toggle-labels" class="chip" aria-pressed="true">Labels</button>
+      <button id="toggle-rotate" class="chip" aria-pressed="false">Spin</button>
+      <button id="share-btn" class="icon-btn" aria-label="Copy a link to this view" title="Copy a link to this view"><span data-icon="share-2"></span></button>
+      <button id="help-btn" class="icon-btn" aria-label="How to use Earth Explorer" aria-controls="welcome"><span data-icon="circle-help"></span></button>
+    </div>
+  </header>
+
+  <nav id="sidebar" class="panel" aria-label="Layers">
+    <div class="side-tabs" role="tablist">
+      <button class="side-tab" role="tab" data-tab="wonders" aria-selected="true">Wonders</button>
+      <button class="side-tab" role="tab" data-tab="landmarks" aria-selected="false">Landmarks</button>
+      <button class="side-tab" role="tab" data-tab="animals" aria-selected="false">Animals</button>
+      <button class="side-tab" role="tab" data-tab="resources" aria-selected="false">Resources</button>
+      <button class="side-tab" role="tab" data-tab="history" aria-selected="false">History</button>
+    </div>
+    <div id="side-content" role="tabpanel"></div>
+  </nav>
+
+  <aside id="info" class="panel hidden" aria-live="polite" aria-label="Details">
+    <button id="info-close" class="icon-btn" aria-label="Close details"><span data-icon="x"></span></button>
+    <div id="info-body"></div>
+  </aside>
+
+  <section id="welcome" class="panel hidden" aria-labelledby="welcome-title">
+    <h2 id="welcome-title">Explore the planet</h2>
+    <ol>
+      <li><b>Drag</b> to spin, <b>scroll or pinch</b> to zoom. Satellite view goes down to single buildings, and every nearby place with a Wikipedia article appears as you zoom in.</li>
+      <li><b>Pick layers on the left:</b> wonders, landmarks, animals (tick several to compare ranges) and natural resources.</li>
+      <li><b>Click anything</b> on the globe for photos, facts and figures.</li>
+      <li><b>Drag the timeline</b> back to the Ice Age. Borders, coastlines, ice, lakes, forests, landmarks and wildlife change with the year.</li>
+    </ol>
+    <p class="credits">Data: Natural Earth, historical-basemaps (A. Ourednik), Wikipedia, NOAA, NASA, NSIDC, USGS, IUCN. Imagery © Esri, Maxar, Earthstar Geographics. Ranges and prehistoric figures are approximate.</p>
+    <button id="welcome-ok" class="btn primary">Start exploring</button>
+  </section>
+
+  <div id="legend" class="panel hidden" aria-label="Map legend"></div>
+
+  <footer id="timeline" class="panel" aria-label="Time machine">
+    <div class="tl-top">
+      <button id="tl-play" aria-label="Play through time"><span data-icon="play"></span></button>
+      <div class="tl-year-wrap">
+        <div id="tl-year" aria-live="polite">2026</div>
+        <div id="tl-era"></div>
+      </div>
+      <div class="tl-jumps">
+        <button data-jump="2026">Today</button>
+        <button data-jump="2025">1 yr ago</button>
+        <button data-jump="1926">100 yrs</button>
+        <button data-jump="1026">1,000 yrs</button>
+        <button data-jump="-2500">Pyramids</button>
+        <button data-jump="-20000">Ice Age</button>
+      </div>
+    </div>
+    <div class="tl-slider-wrap">
+      <input id="tl-slider" type="range" min="0" max="1000" step="1" value="1000" aria-label="Year" title="Track colour shows global temperature: blue colder, red warmer" />
+      <div id="tl-ticks" aria-hidden="true"></div>
+    </div>
+    <div id="tl-stats"></div>
+    <div id="tl-events"></div>
+  </footer>
+
+  <div id="lightbox" class="hidden" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="icon-btn lb-close" aria-label="Close photo"><span data-icon="x"></span></button>
+    <button class="icon-btn lb-nav lb-prev" aria-label="Previous photo"><span data-icon="chevron-left"></span></button>
+    <button class="icon-btn lb-nav lb-next" aria-label="Next photo"><span data-icon="chevron-right"></span></button>
+    <div class="lb-bar"></div>
+  </div>
+
+  <div id="attribution">Imagery © Esri, Maxar, Earthstar Geographics</div>
+  <div id="toast" class="panel hidden" role="status"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
