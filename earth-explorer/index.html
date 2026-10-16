@@ -8,6 +8,8 @@
   <meta name="theme-color" content="#05080f" />
   <link rel="preload" href="assets/fonts/public-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b54a' stroke-width='2' stroke-linecap='round'><circle cx='12' cy='12' r='10'/><path d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20'/></svg>" />
 </head>
@@ -27,29 +29,38 @@
     </div>
     <div class="top-controls">
       <label for="basemap" class="sr-only">Map style</label>
-      <select id="basemap">
+      <span class="basemap-wrap"><span class="basemap-ic"><span data-icon="layers"></span></span><select id="basemap">
         <option value="satellite">Satellite</option>
         <option value="bluemarble">Blue Marble</option>
         <option value="topo">Terrain</option>
         <option value="streets">Streets</option>
         <option value="night">City lights</option>
-      </select>
+        <option value="gibs">NASA daily (timeline date)</option>
+        <option value="seasons">Seasons (NASA, by month)</option>
+        <option value="blackmarble">Night lights 2016 (NASA)</option>
+        <option value="temperature">Land temperature (NASA)</option>
+      </select></span>
       <button id="toggle-nearby" class="chip" aria-pressed="true" title="When zoomed in, show every nearby place that has a Wikipedia article"><span data-icon="book-open"></span><span class="lbl-txt">Nearby</span></button>
       <button id="toggle-borders" class="chip" aria-pressed="true">Borders</button>
       <button id="toggle-labels" class="chip" aria-pressed="true">Labels</button>
       <button id="toggle-rotate" class="chip" aria-pressed="false">Spin</button>
+      <button id="measure-btn" class="icon-btn" aria-label="Measure a distance" title="Measure a distance between two points"><span data-icon="ruler"></span></button>
       <button id="share-btn" class="icon-btn" aria-label="Copy a link to this view" title="Copy a link to this view"><span data-icon="share-2"></span></button>
       <button id="help-btn" class="icon-btn" aria-label="How to use Earth Explorer" aria-controls="welcome"><span data-icon="circle-help"></span></button>
     </div>
   </header>
 
   <nav id="sidebar" class="panel" aria-label="Layers">
-    <div class="side-tabs" role="tablist">
-      <button class="side-tab" role="tab" data-tab="wonders" aria-selected="true">Wonders</button>
-      <button class="side-tab" role="tab" data-tab="landmarks" aria-selected="false">Landmarks</button>
-      <button class="side-tab" role="tab" data-tab="animals" aria-selected="false">Animals</button>
-      <button class="side-tab" role="tab" data-tab="resources" aria-selected="false">Resources</button>
-      <button class="side-tab" role="tab" data-tab="history" aria-selected="false">History</button>
+    <div class="rail" role="tablist" aria-label="Sections" aria-orientation="vertical">
+      <button class="rail-btn" role="tab" data-tab="wonders" aria-selected="true"><span data-icon="mountain-snow"></span><span>Wonders</span></button>
+      <button class="rail-btn" role="tab" data-tab="landmarks" aria-selected="false"><span data-icon="landmark"></span><span>Landmarks</span></button>
+      <button class="rail-btn" role="tab" data-tab="animals" aria-selected="false"><span data-icon="paw-print"></span><span>Animals</span></button>
+      <button class="rail-btn" role="tab" data-tab="resources" aria-selected="false"><span data-icon="pickaxe"></span><span>Resources</span></button>
+      <button class="rail-btn" role="tab" data-tab="countries" aria-selected="false"><span data-icon="flag"></span><span>Countries</span></button>
+      <button class="rail-btn" role="tab" data-tab="history" aria-selected="false"><span data-icon="hourglass"></span><span>History</span></button>
+      <button class="rail-btn" role="tab" data-tab="news" aria-selected="false"><span data-icon="newspaper"></span><span>News</span></button>
+      <button class="rail-btn" role="tab" data-tab="learn" aria-selected="false"><span data-icon="graduation-cap"></span><span>Learn</span></button>
+      <button class="rail-btn" role="tab" data-tab="live" aria-selected="false"><span data-icon="satellite"></span><span>Live</span></button>
     </div>
     <div id="side-content" role="tabpanel"></div>
   </nav>
@@ -62,10 +73,10 @@
   <section id="welcome" class="panel hidden" aria-labelledby="welcome-title">
     <h2 id="welcome-title">Explore the planet</h2>
     <ol>
-      <li><b>Drag</b> to spin, <b>scroll or pinch</b> to zoom. Satellite view goes down to single buildings, and every nearby place with a Wikipedia article appears as you zoom in.</li>
-      <li><b>Pick layers on the left:</b> wonders, landmarks, animals (tick several to compare ranges) and natural resources.</li>
-      <li><b>Click anything</b> on the globe for photos, facts and figures.</li>
-      <li><b>Drag the timeline</b> back to the Ice Age. Borders, coastlines, ice, lakes, forests, landmarks and wildlife change with the year.</li>
+      <li><b>Drag</b> to spin and <b>scroll or pinch</b> to zoom. Satellite view goes down to single buildings, and nearby places with a Wikipedia article appear as you zoom in.</li>
+      <li><b>Use the rail on the left:</b> wonders, landmarks, animals, resources, a country atlas with 60 years of data, history, real news, guided tours and quizzes, and live views of Earth.</li>
+      <li><b>Click anything</b> for photos, facts and figures, then <b>Read full article</b> for the whole story with its sources.</li>
+      <li><b>Drag the timeline</b> back to the Ice Age. Borders, coastlines, ice, landmarks, wildlife and the news of the period follow the year.</li>
     </ol>
     <p class="credits">Data: Natural Earth, historical-basemaps (A. Ourednik), Wikipedia, NOAA, NASA, NSIDC, USGS, IUCN. Imagery © Esri, Maxar, Earthstar Geographics. Ranges and prehistoric figures are approximate.</p>
     <button id="welcome-ok" class="btn primary">Start exploring</button>
@@ -91,6 +102,7 @@
     </div>
     <div class="tl-slider-wrap">
       <input id="tl-slider" type="range" min="0" max="1000" step="1" value="1000" aria-label="Year" title="Track colour shows global temperature: blue colder, red warmer" />
+      <div id="tl-marks" aria-hidden="true" title="Small marks: years with a historical border map"></div>
       <div id="tl-ticks" aria-hidden="true"></div>
     </div>
     <div id="tl-stats"></div>
@@ -103,6 +115,8 @@
     <button class="icon-btn lb-nav lb-next" aria-label="Next photo"><span data-icon="chevron-right"></span></button>
     <div class="lb-bar"></div>
   </div>
+
+  <div id="reader" class="hidden" role="dialog" aria-modal="true" aria-label="Article reader"></div>
 
   <div id="attribution">Imagery © Esri, Maxar, Earthstar Geographics</div>
   <div id="toast" class="panel hidden" role="status"></div>

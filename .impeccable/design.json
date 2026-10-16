@@ -1,0 +1,556 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T23:11:05+00:00",
+  "title": "Design System: Earth Explorer",
+  "extensions": {
+    "colorMeta": {
+      "ink-space": {
+        "role": "neutral",
+        "displayName": "Deep Space",
+        "canonical": "#05080f",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "ink-panel": {
+        "role": "neutral",
+        "displayName": "Panel Ink",
+        "canonical": "#0c1220",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "ink-raised": {
+        "role": "neutral",
+        "displayName": "Raised Ink",
+        "canonical": "#131b2d",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "ink-hover": {
+        "role": "neutral",
+        "displayName": "Hover Ink",
+        "canonical": "#1c2740",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(214, 226, 255, 0.11)",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "rgba(214, 226, 255, 0.2)",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Starlight",
+        "canonical": "#eef2fa",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#b4bdd0",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "text-tertiary": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "#8f9ab2",
+        "tonalRamp": [
+          "#05080f",
+          "#0c1220",
+          "#131b2d",
+          "#1c2740",
+          "#8f9ab2",
+          "#b4bdd0",
+          "#d6e2ff",
+          "#eef2fa"
+        ]
+      },
+      "brass": {
+        "role": "primary",
+        "displayName": "Lantern Brass",
+        "canonical": "#f0b54a",
+        "tonalRamp": [
+          "#261903",
+          "#473006",
+          "#764f0a",
+          "#b3790f",
+          "#eca31d",
+          "#f2be5f",
+          "#f7d8a1",
+          "#fcf2de"
+        ]
+      },
+      "brass-hover": {
+        "role": "primary",
+        "displayName": "Brass Hover",
+        "canonical": "#f6c66b",
+        "tonalRamp": [
+          "#261a02",
+          "#483104",
+          "#785107",
+          "#b77b0b",
+          "#f1a618",
+          "#f5c05c",
+          "#f9da9f",
+          "#fdf2dd"
+        ]
+      },
+      "brass-ink": {
+        "role": "primary",
+        "displayName": "Brass Ink",
+        "canonical": "#1b1306",
+        "tonalRamp": [
+          "#211707",
+          "#3f2c0e",
+          "#684917",
+          "#9f7023",
+          "#d29737",
+          "#dfb571",
+          "#ecd4ac",
+          "#f9f0e2"
+        ]
+      },
+      "brass-text": {
+        "role": "primary",
+        "displayName": "Pale Brass Text",
+        "canonical": "#ffe2ad",
+        "tonalRamp": [
+          "#291a00",
+          "#4c3100",
+          "#805200",
+          "#c27d00",
+          "#ffa80a",
+          "#ffc252",
+          "#ffdb99",
+          "#fff2db"
+        ]
+      },
+      "brass-soft": {
+        "role": "primary",
+        "displayName": "Brass Glaze",
+        "canonical": "rgba(240, 181, 74, 0.16)",
+        "tonalRamp": [
+          "#261903",
+          "#473006",
+          "#764f0a",
+          "#b3790f",
+          "#eca31d",
+          "#f2be5f",
+          "#f7d8a1",
+          "#fcf2de"
+        ]
+      },
+      "brass-wash": {
+        "role": "primary",
+        "displayName": "Brass Wash",
+        "canonical": "rgba(240, 181, 74, 0.1)",
+        "tonalRamp": [
+          "#261903",
+          "#473006",
+          "#764f0a",
+          "#b3790f",
+          "#eca31d",
+          "#f2be5f",
+          "#f7d8a1",
+          "#fcf2de"
+        ]
+      },
+      "series-a": {
+        "role": "secondary",
+        "displayName": "Series Blue",
+        "canonical": "#3987e5",
+        "tonalRamp": [
+          "#051324",
+          "#092444",
+          "#0f3b71",
+          "#165aab",
+          "#277ce3",
+          "#66a2eb",
+          "#a5c8f3",
+          "#dfecfb"
+        ]
+      },
+      "series-b": {
+        "role": "secondary",
+        "displayName": "Series Rust",
+        "canonical": "#d95926",
+        "tonalRamp": [
+          "#230e06",
+          "#411b0b",
+          "#6c2d13",
+          "#a5441d",
+          "#db602f",
+          "#e58e6b",
+          "#f0bda8",
+          "#fae8e1"
+        ]
+      },
+      "correct": {
+        "role": "tertiary",
+        "displayName": "Answer Green",
+        "canonical": "#4fbf7a",
+        "tonalRamp": [
+          "#0b1e12",
+          "#143822",
+          "#225e39",
+          "#348e56",
+          "#4bbe77",
+          "#80d19f",
+          "#b4e4c6",
+          "#e5f5eb"
+        ]
+      },
+      "wrong": {
+        "role": "tertiary",
+        "displayName": "Answer Red",
+        "canonical": "#e05a5a",
+        "tonalRamp": [
+          "#220606",
+          "#400c0c",
+          "#6b1414",
+          "#a31f1f",
+          "#d83131",
+          "#e46d6d",
+          "#efa9a9",
+          "#f9e1e1"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Reader article title only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Reader H2, under a hairline rule."
+      },
+      "card-title": {
+        "displayName": "Card Title",
+        "purpose": "Item name in the detail card."
+      },
+      "year": {
+        "displayName": "Year",
+        "purpose": "Timeline year; tabular lining numerals."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel heads and welcome card."
+      },
+      "subhead": {
+        "displayName": "Subhead",
+        "purpose": "Detail-card section heads."
+      },
+      "standfirst": {
+        "displayName": "Standfirst",
+        "purpose": "Reader lead paragraph."
+      },
+      "body-reading": {
+        "displayName": "Body Reading",
+        "purpose": "Reader column, about 68ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "UI base size."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "List names, figures, row text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Group titles, news categories, chart captions."
+      },
+      "running-head": {
+        "displayName": "Running Head",
+        "purpose": "Reader running head (kind, place, year) only; uppercase."
+      },
+      "apparatus-head": {
+        "displayName": "Apparatus Head",
+        "purpose": "Margin-note heads beside a brass key; uppercase."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 12px 32px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35)",
+        "purpose": "Every panel floating over the globe, the search dropdown, lightbox images."
+      },
+      {
+        "name": "marker-lift",
+        "value": "0 2px 6px rgba(0, 0, 0, 0.55)",
+        "purpose": "Globe marker dots and the timeline thumb, sitting directly on imagery."
+      },
+      {
+        "name": "glass",
+        "value": "backdrop-filter: blur(10px) saturate(120%)",
+        "purpose": "Panels only; pairs with Panel Ink at 0.94 alpha."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The single easing curve for every transition and entrance."
+      },
+      {
+        "name": "panel-in",
+        "value": "translateX(24px), opacity 0.4 -> 1, 0.35s",
+        "purpose": "Detail card and welcome card entrance."
+      },
+      {
+        "name": "reader-in",
+        "value": "translateY(8px), opacity 0 -> 1, 0.3s",
+        "purpose": "Article reader entrance."
+      },
+      {
+        "name": "state",
+        "value": "0.12s-0.2s background/color/border-color",
+        "purpose": "Hover and pressed state changes."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Removes loader spin, card/reader entrances, sidebar, marker, hero and switch transitions; contents jumps scroll instantly."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "1100px"
+      },
+      {
+        "name": "reader-single-column",
+        "value": "980px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      },
+      {
+        "name": "coarse-pointer",
+        "value": "(pointer: coarse)"
+      },
+      {
+        "name": "hairline-2x",
+        "value": "(min-resolution: 2dppx)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one brass action in a group (Back to globe, Go to year).",
+      "html": "<button class=\"ds-btn ds-btn-primary\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20\"/></svg>Back to globe</button>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-ic{width:15px;height:15px;flex:none} .ds-btn{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 13px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer;transition:background .15s} .ds-btn:focus-visible{outline:2px solid var(--brass);outline-offset:2px} .ds-btn-primary{background:var(--brass);border-color:var(--brass);color:var(--brass-ink);font-weight:700} .ds-btn-primary:hover{background:#f6c66b}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined hairline button for every other action.",
+      "html": "<button class=\"ds-btn\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"22\" x2=\"18\" y1=\"12\" y2=\"12\"/><line x1=\"6\" x2=\"2\" y1=\"12\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"6\" y2=\"2\"/><line x1=\"12\" x2=\"12\" y1=\"22\" y2=\"18\"/></svg>Show on globe</button>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-ic{width:15px;height:15px;flex:none} .ds-btn{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 13px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer;transition:background .15s} .ds-btn:hover{background:var(--ink-3)} .ds-btn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}"
+    },
+    {
+      "name": "Toggle Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill toggle for map layers and filters; pressed state takes brass glaze.",
+      "html": "<div style=\"display:flex;gap:6px\"><button class=\"ds-chip\" aria-pressed=\"true\">Borders</button><button class=\"ds-chip\" aria-pressed=\"false\">Spin</button></div>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--text);font:inherit;font-size:13px;cursor:pointer;transition:background .15s,border-color .15s} .ds-chip:hover{background:var(--ink-3)} .ds-chip[aria-pressed='true']{background:var(--brass-soft);border-color:rgba(240,181,74,.55);color:#ffe2ad} .ds-chip:focus-visible{outline:2px solid var(--brass);outline-offset:2px}"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Raised-ink input; border turns brass on focus.",
+      "html": "<input class=\"ds-input\" placeholder=\"Filter by country, capital or region\">",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-input{width:280px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--ink-2);color:var(--text);padding:0 10px;font:inherit;font-size:14px;outline:none;caret-color:var(--brass);transition:border-color .2s} .ds-input::placeholder{color:var(--text-3)} .ds-input:focus{border-color:var(--brass)}"
+    },
+    {
+      "name": "Section Rail",
+      "kind": "nav",
+      "refersTo": "rail-tab",
+      "description": "Vertical icon tablist; selected tab has brass glaze and an inset brass bar.",
+      "html": "<div class=\"ds-rail\"><button class=\"ds-rail-btn\" aria-selected=\"true\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528\"/></svg><span>Countries</span></button><button class=\"ds-rail-btn\" aria-selected=\"false\"><svg class=\"ds-ic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20\"/></svg><span>Live</span></button></div>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-rail{display:flex;flex-direction:column;gap:2px;width:76px;padding:8px 6px;background:var(--ink-1);border-right:1px solid var(--line)} .ds-rail-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 2px 8px;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-2);font:inherit;font-size:11.5px;line-height:1.1;cursor:pointer;transition:color .15s,background .15s} .ds-rail-btn .ds-ic{width:20px;height:20px} .ds-rail-btn:hover{color:var(--text);background:var(--ink-2)} .ds-rail-btn[aria-selected='true']{color:#ffe2ad;background:var(--brass-soft);box-shadow:inset 2px 0 0 var(--brass)} .ds-rail-btn[aria-selected='true'] .ds-ic{color:var(--brass)} .ds-rail-btn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "nav",
+      "refersTo": "seg-control",
+      "description": "Mode switch inside panels (news: today / history).",
+      "html": "<div class=\"ds-seg\" role=\"tablist\"><button aria-selected=\"true\">Today</button><button aria-selected=\"false\">This year in history</button></div>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-seg{display:flex;gap:4px;padding:3px;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;width:320px} .ds-seg button{flex:1;height:34px;border:0;border-radius:7px;background:none;color:var(--text-2);font:inherit;font-size:12.5px;cursor:pointer} .ds-seg button:hover{color:var(--text)} .ds-seg button[aria-selected='true']{background:var(--ink-3);color:var(--text);box-shadow:inset 0 -2px 0 var(--brass)} .ds-seg button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}"
+    },
+    {
+      "name": "Floating Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Ink glass over the globe: the only lifted surface.",
+      "html": "<div class=\"ds-panel\"><h2>Countries</h2><p>An atlas of 177 countries with facts, neighbours and 60 years of World Bank data.</p><dl><dt>Capital</dt><dd>Tokyo</dd><dt>Area</dt><dd>377,930 km²</dd></dl></div>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-panel{width:320px;padding:16px 14px;background:rgba(12,18,32,.94);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 12px 32px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);backdrop-filter:blur(10px) saturate(120%)} .ds-panel h2{margin:0 0 6px;font-family:var(--font-display);font-weight:600;font-size:22px;letter-spacing:-.01em} .ds-panel p{margin:0 0 12px;color:var(--text-2);font-size:13px} .ds-panel dl{display:grid;grid-template-columns:auto 1fr;margin:0;border-top:1px solid var(--line)} .ds-panel dt,.ds-panel dd{margin:0;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px} .ds-panel dt{color:var(--text-2);padding-right:16px} .ds-panel dd{font-weight:600;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Margin Note",
+      "kind": "custom",
+      "refersTo": "reader-margin",
+      "description": "Reader apparatus note keyed with a brass index letter; year rows set the time machine.",
+      "html": "<section class=\"ds-ap\"><h3><span class=\"ds-key\">c</span>In time</h3><button class=\"ds-ap-row\"><span class=\"ds-num\">1450</span><span>Completed</span></button><button class=\"ds-ap-row\"><span class=\"ds-num\">1911</span><span>Bingham expedition</span></button><p class=\"ds-note\">Choose a date to set the time machine.</p></section>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-ap{width:248px;padding:12px 0 14px;border-top:1px solid var(--line);font-size:13px;color:var(--text-2);background:var(--ink-0)} .ds-ap h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text)} .ds-key{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--brass);color:var(--brass);font-size:11px;font-weight:700;letter-spacing:0;text-transform:lowercase} .ds-ap-row{display:flex;justify-content:space-between;gap:10px;width:100%;padding:6px 0;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;font:inherit;font-size:13px;color:var(--text);cursor:pointer} .ds-ap-row:hover{color:var(--brass)} .ds-ap-row:focus-visible{outline:2px solid var(--brass);outline-offset:2px} .ds-num{color:var(--brass);font-variant-numeric:lining-nums tabular-nums} .ds-note{font-size:12px;color:var(--text-3);margin:6px 0 0}"
+    },
+    {
+      "name": "Chart Tooltip",
+      "kind": "custom",
+      "refersTo": "chart-tooltip",
+      "description": "Crosshair readout: year in slate, one swatch row per series (max two).",
+      "html": "<div class=\"ds-tip\"><div class=\"ds-tt-year\">2020</div><div class=\"ds-tt-row\"><i style=\"background:#3987e5\"></i><strong>126.3 M</strong><span>Japan</span></div><div class=\"ds-tt-row\"><i style=\"background:#d95926\"></i><strong>51.8 M</strong><span>Korea</span></div></div>",
+      "css": ":host{--ink-0:#05080f;--ink-1:#0c1220;--ink-2:#131b2d;--ink-3:#1c2740;--line:rgba(214,226,255,.11);--line-strong:rgba(214,226,255,.2);--text:#eef2fa;--text-2:#b4bdd0;--text-3:#8f9ab2;--brass:#f0b54a;--brass-ink:#1b1306;--brass-soft:rgba(240,181,74,.16);--radius:12px;--radius-sm:8px;--font-ui:'Public Sans',system-ui,sans-serif;--font-display:'Newsreader',Georgia,serif;font-family:var(--font-ui);color:var(--text)} .ds-tip{display:inline-block;min-width:96px;padding:6px 9px;border-radius:8px;background:var(--ink-0);border:1px solid var(--line-strong);font-size:12px} .ds-tt-year{color:var(--text-3);font-size:11.5px;margin-bottom:2px} .ds-tt-row{display:flex;align-items:center;gap:6px} .ds-tt-row i{display:inline-block;width:10px;height:3px;border-radius:2px} .ds-tt-row strong{font-variant-numeric:tabular-nums} .ds-tt-row span{color:var(--text-2)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Atlas",
+    "overview": "Earth Explorer is a night-time atlas laid over a living globe. The planet is the brightest thing on screen; everything else is dark ink glass that floats above it and gets out of its way. One warm brass accent marks what you can act on and what is selected. Every other colour on the globe belongs to the map itself: layer colours, event colours, conservation status, and the temperature-tinted time track.\n\nThe chrome is dense and quiet: a top bar, a vertical icon rail with a list panel, a detail card on the right and a time machine along the bottom, all set in Public Sans at 13 to 14px with Newsreader serif titles. When a learner opens an article, the globe gives way to a full-screen reader built like an encyclopedia entry with scholarly apparatus. It has a single 68ch reading column, a 248px margin of keyed notes (Where, Key figures, In time, Nearby, Sources), hairline rules, and no boxes inside the column.\n\nThe system rejects the \"Wikipedia page pasted in a modal\" and blog-card layouts for reading. It never uses decorative colour on the chrome: brass is earned by action, selection or a key.",
+    "keyCharacteristics": [
+      "Ink panels at 94% opacity with a 10px backdrop blur, floating over the globe on a 10px inset.",
+      "One brass accent (#f0b54a) for primary actions, selection, focus rings, keys and year links.",
+      "Newsreader serif for titles, the year and section heads; Public Sans for everything that works.",
+      "Hairline rules (1px, one device pixel on 2x screens in the reader) instead of boxes.",
+      "Tabular lining numerals for every figure, year and coordinate.",
+      "Lucide line icons (24-grid, 2px stroke) at 15 to 20px; no glyph or emoji icons."
+    ],
+    "rules": [
+      {
+        "name": "The One Brass Rule",
+        "body": "Brass on the chrome means \"act here\" or \"this is selected\". Never use it for decoration, section tints or emphasis in running text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Map Owns Colour Rule",
+        "body": "Hues other than brass and ink belong to map content: layer markers, event chips, IUCN status badges and the temperature track. Chrome never borrows them.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Series Rule",
+        "body": "Charts draw at most two series, Blue then Rust. A single series has no legend.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Years, coordinates, statistics, axis labels and table cells use `lining-nums tabular-nums`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Serif Is a Name Rule",
+        "body": "Newsreader sets names, titles, years and section heads. It never sets controls, labels or paragraphs. Blockquotes and the italic reader description are the only exceptions.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glass Over Globe Rule",
+        "body": "Only surfaces that float over the globe get Float and Glass. Nothing inside a panel or the reader is lifted.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat Reader Rule",
+        "body": "The reading column has no cards, shadows or tinted boxes. Structure comes from 1px hairlines (0.5px on 2x screens), tonal steps and type.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** float chrome over the globe as Panel Ink glass (0.94, 10px blur, 12px corners, Float shadow), inset 10px from the edges.",
+      "**Do** reserve Lantern Brass (#f0b54a) for the primary action, selection, focus, keys and year links.",
+      "**Do** set every number in tabular lining figures.",
+      "**Do** separate content with 1px hairlines, at one device pixel on 2x screens in the reader.",
+      "**Do** chart one series in Series Blue without a legend. Add Series Rust and a legend only for a second series, and always ship the crosshair tooltip and the \"Show data\" table.",
+      "**Do** key every margin note that has an anchor in the text with a brass index letter at its first mention.",
+      "**Do** use Lucide line icons from the shared subset, at 15px in controls and 20px in the rail.",
+      "**Do** give every animation a reduced-motion path."
+    ],
+    "donts": [
+      "**Don't** put cards, shadows or tinted boxes inside the reader column. Photos are plain plates.",
+      "**Don't** lift elements inside a panel with extra shadows. Depth inside panels is tonal.",
+      "**Don't** use map hues (layer, event or status colours) on chrome, or brass as decoration.",
+      "**Don't** put a small uppercase kicker or eyebrow above a title. Tracked uppercase is only for the reader's running head and margin-note heads.",
+      "**Don't** use glyph or emoji icons, or a system display face. Newsreader and Public Sans are self-hosted.",
+      "**Don't** draw more than two series in a chart, or a legend for one series.",
+      "**Don't** set controls or paragraphs in Newsreader."
+    ]
+  }
+}
