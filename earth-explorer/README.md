@@ -23,7 +23,7 @@ Everything lives on one globe and follows one timeline, from 20,000 BC to today.
 | Section | What you can do |
 |---|---|
 | **Wonders, Landmarks** | 87 natural wonders and 121 landmarks with real photos, facts and a satellite close-up down to street level. Lost landmarks (Colossus of Rhodes, Twin Towers…) appear when you travel back in time. |
-| **Animals** | 42 species: approximate ranges, 3D miniatures at their habitats (38 real glTF models, 12 with skeletal or morph animation, the rest moved procedurally), historic ranges and extinct species that follow the timeline. Cards use real photographs. |
+| **Animals** | 42 species: approximate ranges, animated 3D miniatures at their habitats (rigged procedural models with planted-foot gaits, grazing, swimming and flight, plus glTF models for five species), historic ranges and extinct species that follow the timeline. Cards use real photographs. |
 | **Resources** | 16 natural resources, 272 major deposits, producer choropleths. |
 | **Countries** | An atlas of every country: capital, languages, currency, area, neighbours (bundled from mledoze/countries), and 60 years of World Bank data (population, GDP per person, life expectancy, urbanisation, CO₂, forest, internet). Compare any two countries side by side. |
 | **History** | Real historical borders for 54 dates (historical-basemaps), ice sheets, land bridges, lakes, glaciers, deforestation, 144 pinned events, eras and world indicators. |
@@ -49,7 +49,7 @@ sw.js, manifest.webmanifest  offline cache and install metadata
 js/animals3d.js      glTF + procedural animated animal miniatures
 js/icons.js          Lucide icon subset
 js/data/*.js         curated data (wonders, landmarks, animals, resources, timeline)
-assets/models/*.glb  glTF animal models (manifest.json: facing, clip, licence; CREDITS.md)
+assets/models/*.glb  animated glTF models
 assets/data/         Natural Earth country borders; countries-info.json (mledoze/countries, ODbL)
 assets/fonts/        Public Sans + Newsreader (self-hosted, SIL OFL)
 vendor/earth-libs.js globe.gl + three.js bundle (rebuild with vendor/build.sh)
@@ -63,7 +63,7 @@ vendor/earth-libs.js globe.gl + three.js bundle (rebuild with vendor/build.sh)
 - Country facts: [mledoze/countries](https://github.com/mledoze/countries) (ODbL 1.0). Time series: World Bank Open Data (CC BY 4.0).
 - Space imagery: NASA EPIC (DSCOVR) and NASA GIBS / Worldview (MODIS Terra), public domain.
 - Statistics: NOAA (Mauna Loa CO₂), NSIDC Sea Ice Index, HadCRUT5 / WMO, USGS Mineral Commodity Summaries, Energy Institute Statistical Review, Kimberley Process, UN and long-run population estimates, FAO forest data.
-- 3D models: Horse, Flamingo, Parrot and Stork from the three.js examples (mirada / ro.me, MIT). Fox from the Khronos glTF Sample Assets (CC0 model by PixelMannen, rigging CC-BY 4.0 by @tomkranis). Animated zebra, wolf, eagle, whale, shark and dolphin by Quaternius (CC0); monarch butterfly by Čestmír Dammer (CC0). 26 further models from the Google Poly archive via Icosa Gallery (CC BY 3.0, mostly by Poly by Google). Full per-model credits: [`assets/models/CREDITS.md`](assets/models/CREDITS.md). Moose, Komodo dragon, dodo and thylacine are generated procedurally in `js/animals3d.js`.
+- 3D models: Horse, Flamingo, Parrot and Stork from the three.js examples (mirada / ro.me, MIT). Fox from the Khronos glTF Sample Assets (CC0 model by PixelMannen, rigging CC-BY 4.0 by @tomkranis). All other animals are generated and rigged procedurally in `js/animals3d.js`.
 - Newspapers: Library of Congress, Chronicling America (public domain scans). Events near a place: Wikidata (CC0). Earthquakes: USGS. Natural events: NASA EONET. ISS position: wheretheiss.at.
 - Libraries: [globe.gl](https://github.com/vasturiano/globe.gl) and [three.js](https://threejs.org/). Icons: [Lucide](https://lucide.dev) (ISC). Fonts: Public Sans and Newsreader (SIL Open Font License).
 
