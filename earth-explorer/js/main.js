@@ -1063,6 +1063,9 @@ function selectTab(tab, { reopen = true } = {}) {
   renderSide();
   PANELS[tab]?.enter?.();
   sideContent.scrollTop = 0;
+  // On phones the rail is a horizontal strip: keep the chosen tab in view (without scrolling ancestors).
+  const rail = $('.rail'), btn = $(`.rail-btn[data-tab="${tab}"]`);
+  if (rail && btn && rail.scrollWidth > rail.clientWidth) rail.scrollLeft = btn.offsetLeft - (rail.clientWidth - btn.offsetWidth) / 2;
   writeHash();
 }
 $$('.rail-btn').forEach((b) => (b.onclick = () => selectTab(b.dataset.tab)));

@@ -228,7 +228,8 @@ export function createNews(ctx) {
 
   function defaultDate() {
     const y = ctx.state.year;
-    if (y >= 2026) { const d = new Date(Date.now() - 864e5 * 0); return d.toISOString().slice(0, 10); }
+    // Yesterday: today's Current events page is often not written yet.
+    if (y >= 2026) return new Date(Date.now() - 864e5).toISOString().slice(0, 10);
     if (y >= 2002) return `${y}-06-15`;
     return null;
   }
@@ -243,7 +244,7 @@ export function createNews(ctx) {
     el.innerHTML = `<div class="side-head"><h2>News</h2></div>
       <p class="side-desc">Real reporting for the year on the timeline: daily news citing its outlets (2002 onwards), the chronicle of any year back to the Ice Age, and chronicles of single countries.</p>
       <div class="seg" role="tablist" aria-label="News source">
-        <button role="tab" aria-selected="${st.mode === 'day'}" data-nm="day" ${y < 2002 ? 'disabled title="Daily news starts in 2002. Move the timeline later."' : ''}>${icon('newspaper')}Day by day</button>
+        <button role="tab" aria-selected="${st.mode === 'day'}" data-nm="day" ${y < 2002 ? 'disabled title="Daily news starts in 2002. Move the timeline later."' : ''}>${icon('newspaper')}Daily</button>
         <button role="tab" aria-selected="${st.mode === 'year'}" data-nm="year">${icon('calendar-days')}Chronicle</button>
         <button role="tab" aria-selected="${st.mode === 'papers'}" data-nm="papers" ${y < 1770 || y > 1963 ? 'disabled title="Digitised newspapers cover 1770–1963. Move the timeline into that range."' : ''}>${icon('scroll')}Newspapers</button>
       </div>

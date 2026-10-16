@@ -198,7 +198,7 @@ export const TOURS = [
         lat: 29.845, lng: 31.25, alt: 0.6,
         year: -3100,
         open: "e:ev21",
-        wiki: "Early_Dynastic_Period_(Egypt)"
+        wiki: "Early_Dynastic_Period_of_Egypt"
       },
       {
         title: "The Indus Valley: planned cities",
@@ -484,7 +484,7 @@ export const TOURS = [
         lat: -34.0, lng: 151.2, alt: 0.6,
         year: 1770,
         open: "e:ev74",
-        wiki: "James_Cook's_first_voyage"
+        wiki: "First_voyage_of_James_Cook"
       },
       {
         title: "1779: Cook's last voyage",
@@ -833,7 +833,7 @@ export const TOURS = [
         text: "Hunting and habitat loss wiped out cheetahs in India, and the species was declared extinct there in 1952. On 17 September 2022, eight cheetahs from Namibia were released into Kuno National Park in Madhya Pradesh, followed by twelve from South Africa in 2023, the first intercontinental reintroduction of a large carnivore. Some animals have died, but cubs have been born in India, and the project continues.",
         lat: 25.6, lng: 77.4, alt: 0.4,
         animals: ["cheetah"],
-        wiki: "Project_Cheetah"
+        wiki: "African_cheetah_translocation_to_India"
       }
     ]
   },
@@ -1033,7 +1033,7 @@ export const TOURS = [
         year: 2026,
         resources: ["lithium"],
         open: "c:AUS",
-        wiki: "Greenbushes_lithium_mine"
+        wiki: "Greenbushes_mine"
       },
       {
         title: "Lithium: the Lithium Triangle",
