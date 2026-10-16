@@ -181,7 +181,7 @@ export function createReader(ctx) {
     const c = item?.lat != null ? [item.lat, item.lng] : sum?.coordinates ? [sum.coordinates.lat, sum.coordinates.lon] : null;
     if (!c && !item?.dates?.length) return '';
     return `<aside class="rd-inline-ap" aria-label="Place and time">
-      ${c ? `<div class="row"><span class="num">${Math.abs(c[0]).toFixed(2)}° ${c[0] >= 0 ? 'N' : 'S'}, ${Math.abs(c[1]).toFixed(2)}° ${c[1] >= 0 ? 'E' : 'W'}</span><button class="btn" data-r="globe" data-ll="${c[0]},${c[1]}">${icon('crosshair')}Show on globe</button></div>` : ''}
+      ${c ? `<div class="row"><span class="num">${Math.abs(c[0]).toFixed(3)}° ${c[0] >= 0 ? 'N' : 'S'}, ${Math.abs(c[1]).toFixed(3)}° ${c[1] >= 0 ? 'E' : 'W'}</span><button class="btn" data-r="globe" data-ll="${c[0]},${c[1]}">${icon('crosshair')}Show on globe</button></div>` : ''}
       ${(item?.dates || []).slice(0, 3).map((d) => `<button class="ap-row" data-r="year" data-year="${d.year}"><span class="num">${esc(fmtYear(d.year))}</span><span>${esc(d.label)}</span></button>`).join('')}
     </aside>`;
   }
