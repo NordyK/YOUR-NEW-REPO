@@ -11,7 +11,6 @@ cat > "$tmp/entry.js" <<'JS'
 export { default as Globe } from 'globe.gl';
 export * as THREE from 'three';
 export { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-export { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 export * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 JS
 (cd "$tmp" && npm install --no-audit --no-fund >/dev/null && npx esbuild entry.js --bundle --format=esm --minify --legal-comments=eof --outfile="$out")

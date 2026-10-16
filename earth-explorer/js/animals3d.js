@@ -1,6 +1,6 @@
-// Animated 3D animals: real glTF models where available, stylised procedural models otherwise.
+// Animated 3D animal miniatures for the globe: glTF models where available, stylised procedural models otherwise.
 // Convention for every model: head points +X, up is +Y, feet rest on y = 0.
-import { THREE, GLTFLoader, OrbitControls, SkeletonUtils } from '../vendor/earth-libs.js';
+import { THREE, GLTFLoader, SkeletonUtils } from '../vendor/earth-libs.js';
 
 export { THREE };
 
@@ -879,87 +879,4 @@ export async function createAnimal(id) {
   built.update(0);
   const object = normalise(built.root);
   return { object, update: (t) => built.update(t), flying: FLYING.has(id), marine: MARINE.has(id) };
-}
-
-// ---------------------------------------------------------------- stand-alone viewer
-export class AnimalViewer {
-  constructor(container) {
-    this.el = container;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    container.appendChild(this.renderer.domElement);
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(38, 1, 0.01, 100);
-    this.scene.add(new THREE.HemisphereLight('#dbe9ff', '#3b2f22', 2.2));
-    const sun = new THREE.DirectionalLight('#fff3e0', 2.6);
-    sun.position.set(3, 5, 4);
-    this.scene.add(sun);
-    const rim = new THREE.DirectionalLight('#8fb8ff', 1.2);
-    rim.position.set(-4, 2, -3);
-    this.scene.add(rim);
-    // ground disc with soft shadow
-    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
-    const g = cv.getContext('2d'), grd = g.createRadialGradient(64, 64, 4, 64, 64, 64);
-    grd.addColorStop(0, 'rgba(0,0,0,0.55)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
-    g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
-    this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }));
-    this.shadow.rotation.x = -Math.PI / 2;
-    this.scene.add(this.shadow);
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableDamping = true;
-    this.controls.autoRotate = true;
-    this.controls.autoRotateSpeed = 1.6;
-    this.controls.enablePan = false;
-    this.clock = new THREE.Timer();
-    this.current = null;
-    this.token = 0;
-    const loop = () => {
-      if (this.disposed) return;
-      this.raf = requestAnimationFrame(loop);
-      this.resize();
-      this.clock.update();
-      const dt = Math.min(0.05, this.clock.getDelta()), t = this.clock.getElapsed();
-      if (this.current) this.current.update(t, dt);
-      this.controls.update();
-      this.renderer.render(this.scene, this.camera);
-    };
-    loop();
-  }
-  resize() {
-    const w = this.el.clientWidth, h = this.el.clientHeight;
-    if (w && h && (w !== this._w || h !== this._h)) {
-      this._w = w; this._h = h;
-      this.renderer.setSize(w, h, false);
-      this.camera.aspect = w / h;
-      this.camera.updateProjectionMatrix();
-    }
-  }
-  async show(id) {
-    const token = ++this.token;
-    const inst = await createAnimal(id);
-    if (token !== this.token || this.disposed) return;
-    if (this.current) this.scene.remove(this.current.object);
-    this.current = inst;
-    this.scene.add(inst.object);
-    const size = inst.object.userData.size;
-    const hover = inst.flying ? 0.25 : inst.marine ? 0.15 : 0;
-    inst.object.position.y = hover;
-    this.shadow.visible = !inst.marine;
-    this.shadow.scale.setScalar(Math.max(size.x, size.z) * 1.1);
-    const cy = hover + size.y * 0.5;
-    const dist = Math.max(1.35, size.y * 1.9 + 0.7);
-    this.camera.position.set(dist * 0.85, cy + dist * 0.3, dist * 0.75);
-    this.controls.target.set(0, cy, 0);
-    this.controls.update();
-  }
-  dispose() {
-    this.disposed = true;
-    cancelAnimationFrame(this.raf);
-    this.controls.dispose();
-    this.renderer.dispose();
-    this.renderer.forceContextLoss?.();
-    this.renderer.domElement.remove();
-  }
 }
