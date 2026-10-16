@@ -1,6 +1,6 @@
 // Earth Explorer service worker: the app shell and bundled data work offline;
 // map tiles, photos and API answers are kept in a bounded runtime cache.
-const VERSION = 'ee-v3';
+const VERSION = 'ee-v4';
 const SHELL = [
   './', 'index.html', 'css/style.css', 'manifest.webmanifest',
   'js/main.js', 'js/animals3d.js', 'js/icons.js', 'js/reader.js', 'js/countries.js', 'js/news.js', 'js/learn.js', 'js/live.js',
